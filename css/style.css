@@ -21,14 +21,42 @@ body {
     z-index: 1000; /* Ensure menu stays on top */
     height: 60px; /* Fixed height */
     display: flex;
-    justify-content: space-between; /* Space between menu items and language selector */
+    justify-content: space-between; /* Push hamburger/logo and nav content apart */
     align-items: center; /* Center menu items vertically */
-    padding: 0 20px; /* Add padding to space out elements */
+    padding: 0 15px; /* Consistent padding */
     box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Hide hamburger on larger screens */
+.hamburger-menu {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1010; /* Ensure it's above nav-content */
+}
+
+.hamburger-menu span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    margin: 5px 0;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Nav content container */
+.nav-content {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end; /* Align items to the right on desktop */
+    flex-grow: 1; /* Allow it to take remaining space */
 }
 
 .menu-container {
     display: flex; /* Use flexbox for horizontal alignment */
+    margin-right: 15px; /* Space between menu and language selector */
 }
 
 /* Menu Item Styling */
@@ -89,23 +117,80 @@ h1 {
         flex-direction: column; /* Stack menu and selector vertically */
         height: auto; /* Allow height to adjust */
         padding: 10px;
+        justify-content: space-between; /* Hamburger left, potentially logo/title center/right */
     }
+
+    /* Show hamburger */
+    .hamburger-menu {
+        display: block;
+    }
+
+    /* Style nav-content for mobile overlay */
+    .nav-content {
+        display: none; /* Hide by default on mobile */
+        position: fixed; /* Take over screen */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh; /* Full viewport height */
+        background-color: rgba(248, 249, 250, 0.98); /* Slightly transparent background */
+        flex-direction: column; /* Stack items vertically */
+        justify-content: center; /* Center items vertically */
+        align-items: center; /* Center items horizontally */
+        padding-top: 60px; /* Space below menu bar */
+        z-index: 1005; /* Below hamburger but above page content */
+        box-sizing: border-box;
+    }
+
+    /* Show nav-content when menu is open */
+    .nav-content.mobile-menu-open {
+        display: flex;
+    }
+
+    /* Adjust menu container and items for vertical layout */
     .menu-container {
         flex-wrap: wrap; /* Allow items to wrap on smaller screens */
         margin-bottom: 10px; /* Add space below menu items */
         justify-content: center; /* Center menu items when stacked */
+        flex-direction: column; /* Stack menu items */
+        align-items: center;
+        margin-right: 0;
+        margin-bottom: 20px; /* Space below menu items */
+        width: 100%;
     }
+
     .menu-item {
-        margin: 5px; /* Adjust margin for wrapped items */
+        margin: 10px 0; /* Vertical spacing */
+        padding: 12px 25px;
+        width: 80%; /* Make items wider */
+        text-align: center;
+        font-size: 1.1rem;
     }
+
     .language-selector-container {
         width: 100%;
         justify-content: center; /* Center the language selector */
+        margin-top: 20px; /* Space above language selector */
     }
+
     #language-selector {
         width: auto; /* Adjust width */
         max-width: 150px;
+        padding: 8px 12px;
+        font-size: 1rem;
     }
+
+    /* Hamburger animation when open */
+    .hamburger-menu.open span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger-menu.open span:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger-menu.open span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
     body {
         padding-top: 120px; /* Adjust body padding if menu wraps and takes more space */
     }

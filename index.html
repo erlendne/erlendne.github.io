@@ -8,16 +8,26 @@
 </head>
 <body>
     <nav class="menu-bar">
-        <div class="menu-container">
-            <a href="index.html" class="menu-item" data-translate="menuHome">Home</a> <!-- Add key -->
-            <a href="page1.html" class="menu-item" data-translate="menuPage1">Page 1</a> <!-- Add key -->
-            <a href="page2.html" class="menu-item" data-translate="menuPage2">Page 2</a> <!-- Add key -->
-        </div>
-        <div class="language-selector-container">
-            <select id="language-selector">
-                <option value="en">English</option>
-                <option value="no">Norsk</option>
-            </select>
+        <!-- Hamburger Button (visible on mobile) -->
+        <button class="hamburger-menu" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Container for menu items and language selector (for mobile toggle) -->
+        <div class="nav-content">
+            <div class="menu-container">
+                <a href="index.html" class="menu-item" data-translate="menuHome">Home</a> <!-- Add key -->
+                <a href="page1.html" class="menu-item" data-translate="menuPage1">Page 1</a> <!-- Add key -->
+                <a href="page2.html" class="menu-item" data-translate="menuPage2">Page 2</a> <!-- Add key -->
+            </div>
+            <div class="language-selector-container">
+                <select id="language-selector">
+                    <option value="en">English</option>
+                    <option value="no">Norsk</option>
+                </select>
+            </div>
         </div>
     </nav>
 

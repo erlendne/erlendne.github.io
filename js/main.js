@@ -1,11 +1,45 @@
 // This file contains JavaScript code for handling dynamic behavior and localization.
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded and parsed."); // Log DOM ready
+    console.log("DOM fully loaded and parsed.");
 
-    const supportedLangs = ['en', 'no'];
+    // --- Embedded Translations ---
+    const translationsData = {
+        en: {
+            "menuHome": "Home",
+            "menuPage1": "Page 1",
+            "menuPage2": "Page 2",
+            "pageTitleIndex": "Landing Page",
+            "pageTitlePage1": "Page 1",
+            "pageTitlePage2": "Page 2",
+            "headingIndex": "Click a menu item at the top",
+            "headingPage1": "Hello world.",
+            "headingPage2": "Hello world 2",
+            "paragraphIndex": "This is the landing page content.",
+            "paragraphPage1": "This is the content for Page 1.",
+            "paragraphPage2": "This is the content for Page 2."
+        },
+        no: {
+            "menuHome": "Hjem",
+            "menuPage1": "Side 1",
+            "menuPage2": "Side 2",
+            "pageTitleIndex": "Landingsside",
+            "pageTitlePage1": "Side 1",
+            "pageTitlePage2": "Side 2",
+            "headingIndex": "Klikk på et menyelement øverst",
+            "headingPage1": "Hallo verden.",
+            "headingPage2": "Hallo verden 2",
+            "paragraphIndex": "Dette er innholdet på landingssiden.",
+            "paragraphPage1": "Dette er innholdet for Side 1.",
+            "paragraphPage2": "Dette er innholdet for Side 2."
+        }
+    };
+
+    const supportedLangs = Object.keys(translationsData); // ['en', 'no']
     const langSelector = document.getElementById('language-selector');
     const storageKey = 'userLanguage';
+    const hamburgerBtn = document.querySelector('.hamburger-menu'); // Get hamburger button
+    const navContent = document.querySelector('.nav-content'); // Get the container to toggle
 
     // --- Language Detection and Selection ---
     function getSelectedLanguage() {
@@ -39,26 +73,16 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error("Language selector element not found!");
     }
 
-    // --- Translation Loading ---
-    async function loadTranslations(language) {
-        console.log(`Attempting to load translations for: ${language}`);
-        const url = `lang/${language}.json?v=${Date.now()}`; // Cache busting
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status} for ${url}`);
-            }
-            const translations = await response.json();
-            console.log(`Translations loaded successfully for: ${language}`, translations);
+    // --- Translation Loading (Now just retrieves from embedded object) ---
+    function getTranslations(language) {
+        console.log(`Retrieving translations for: ${language}`);
+        const translations = translationsData[language];
+        if (translations) {
+            console.log(`Translations retrieved successfully for: ${language}`);
             return translations;
-        } catch (error) {
-            console.error(`Could not load translation file from ${url}:`, error);
-            // Fallback to English if loading fails for the selected language
-            if (language !== 'en') {
-                console.warn("Falling back to English translations.");
-                return await loadTranslations('en');
-            }
-            return {}; // Return empty object if English also fails
+        } else {
+            console.warn(`No embedded translations found for language: ${language}. Falling back to 'en'.`);
+            return translationsData['en'] || {}; // Fallback to English or empty
         }
     }
 
@@ -88,10 +112,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // --- Language Change Handler ---
-    async function handleLanguageChange(newLang) {
+    function handleLanguageChange(newLang) {
         if (!supportedLangs.includes(newLang)) {
             console.warn(`Unsupported language selected: ${newLang}. Ignoring change.`);
-            // Optionally reset dropdown to currentLang if needed
             if(langSelector) langSelector.value = currentLang;
             return;
         }
@@ -106,11 +129,11 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem(storageKey, currentLang); // Store preference
         console.log(`Stored language preference: ${currentLang}`);
 
-        // Load and apply the new translations
-        const newTranslations = await loadTranslations(currentLang);
+        // Get and apply the new translations from the embedded object
+        const newTranslations = getTranslations(currentLang);
         applyTranslations(newTranslations, currentLang);
 
-        // Update dropdown value (redundant if triggered by user change, but good practice)
+        // Update dropdown value
         if (langSelector) {
             langSelector.value = currentLang;
         }
@@ -119,10 +142,25 @@ document.addEventListener('DOMContentLoaded', function() {
         updateMenuActiveState();
     }
 
+    // --- Hamburger Menu Toggle ---
+    if (hamburgerBtn && navContent) {
+        hamburgerBtn.addEventListener('click', () => {
+            console.log("Hamburger button clicked.");
+            const isOpen = navContent.classList.toggle('mobile-menu-open');
+            hamburgerBtn.classList.toggle('open', isOpen); // Toggle class on button for animation
+            hamburgerBtn.setAttribute('aria-expanded', isOpen); // Update accessibility attribute
+            console.log(`Mobile menu is now ${isOpen ? 'open' : 'closed'}.`);
+            // Optional: Prevent body scroll when menu is open
+            // document.body.style.overflow = isOpen ? 'hidden' : '';
+        });
+    } else {
+        console.warn("Hamburger button or nav content element not found.");
+    }
+
     // --- Initialize Page ---
-    async function initializePage() {
+    function initializePage() {
         console.log("Initializing page...");
-        const initialTranslations = await loadTranslations(currentLang);
+        const initialTranslations = getTranslations(currentLang);
         applyTranslations(initialTranslations, currentLang);
         updateMenuActiveState(); // Set active menu item
         adjustBodyPadding(); // Adjust padding below fixed menu
@@ -141,10 +179,15 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateMenuActiveState() {
         const menuItems = document.querySelectorAll('.menu-item');
         let currentPath = window.location.pathname;
-        if (currentPath === '/') {
-            currentPath = '/index.html';
+        if (currentPath === '/' || currentPath === '') {
+            const pathParts = window.location.href.split('/');
+            currentPath = pathParts[pathParts.length - 1] || 'index.html';
+            if (currentPath.includes('?')) currentPath = currentPath.split('?')[0];
+        } else {
+            currentPath = currentPath.substring(currentPath.lastIndexOf('/') + 1);
         }
-        const currentFile = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+        const currentFile = currentPath || 'index.html';
+
         console.log(`Updating active menu state for path: ${currentFile}`);
         menuItems.forEach(item => {
             const itemHref = item.getAttribute('href');
