@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="pageTitleAbout">About This Site</title> <!-- Updated Title Key -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="menu-bar">
+        <!-- Hamburger Button (visible on mobile) -->
+        <button class="hamburger-menu" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Container for menu items and language selector (for mobile toggle) -->
+        <div class="nav-content">
+            <div class="menu-container">
+                <a href="index.html" class="menu-item" data-translate="menuHome">Home</a>
+                <a href="about.html" class="menu-item" data-translate="menuAbout">About</a> <!-- Updated Link & Key -->
+                <!-- <a href="page2.html" class="menu-item" data-translate="menuPage2">Page 2</a> --> <!-- Removed Link -->
+                <a href="page3.html" class="menu-item" data-translate="menuInterestCalc">Interest Calc</a> <!-- Updated Link Text & Key -->
+            </div>
+            <div class="language-selector-container">
+                <select id="language-selector">
+                    <option value="en">English</option>
+                    <option value="no">Norsk</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1 data-translate="headingAbout">About This Site</h1> <!-- Updated Heading Key -->
+        <p data-translate="aboutParagraph1">This is a test page created just for fun by Erlndev Technologies.</p> <!-- New Content & Key -->
+        <p data-translate="aboutParagraph2">It demonstrates a simple multi-page website structure with features like a persistent navigation menu, language switching (English/Norwegian), and a basic interest calculator.</p> <!-- New Content & Key -->
+        <p data-translate="aboutParagraph3">The site was developed using HTML, CSS, and JavaScript, leveraging tools like GitHub for version control and GitHub Copilot for assistance during development.</p> <!-- New Content & Key -->
+
+        <hr style="margin: 20px 0;">
+
+        <h2 data-translate="disclaimerHeading">Disclaimer</h2> <!-- New Content & Key -->
+        <p data-translate="disclaimerParagraph1">The information and tools provided on this website, including the interest calculator, are for informational and illustrative purposes only. They are provided "as is" without warranty of any kind, express or implied.</p> <!-- New Content & Key -->
+        <p data-translate="disclaimerParagraph2">The author (Erlndev Technologies) takes no responsibility for any errors or omissions in the content or calculations, nor for any actions taken based on the information provided. Users are solely responsible for verifying the accuracy and applicability of any information or calculation results before making any financial decisions.</p> <!-- New Content & Key -->
+        <p data-translate="disclaimerParagraph3">By using this website, you agree that the author shall not be liable for any financial loss, damages, or other negative consequences arising from your use of this site or reliance on its content. Use this website entirely at your own risk.</p> <!-- New Content & Key -->
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

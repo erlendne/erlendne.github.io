@@ -7,20 +7,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const translationsData = {
         en: {
             "menuHome": "Home",
-            "menuPage1": "Page 1",
-            "menuPage2": "Page 2",
-            "menuPage3": "Page 3", // New
-            "pageTitleIndex": "Landing Page",
-            "pageTitlePage1": "Page 1",
-            "pageTitlePage2": "Page 2",
-            "pageTitlePage3": "Interest Calculator", // New
+            "menuAbout": "About", // Renamed from menuPage1
+            "menuInterestCalc": "Interest Calc", // Renamed from menuPage3
+            "pageTitleIndex": "Erlndev | Landing Page", // Updated
+            "pageTitleAbout": "Erlndev | About This Site", // Updated
+            "pageTitleInterestCalc": "Erlndev | Interest Calculator", // Updated
             "headingIndex": "Click a menu item at the top",
-            "headingPage1": "Hello world.",
-            "headingPage2": "Hello world 2",
-            "headingPage3": "Interest Calculator", // New
+            "headingAbout": "About This Site", // Renamed from headingPage1
+            "headingInterestCalc": "Interest Calculator", // Renamed from headingPage3
             "paragraphIndex": "This is the landing page content.",
-            "paragraphPage1": "This is the content for Page 1.",
-            "paragraphPage2": "This is the content for Page 2.",
+            // About Page Content - EN
+            "aboutParagraph1": "This is a test page created just for fun by Erlndev Technologies.",
+            "aboutParagraph2": "It demonstrates a simple multi-page website structure with features like a persistent navigation menu, language switching (English/Norwegian), and a basic interest calculator.",
+            "aboutParagraph3": "The site was developed using HTML, CSS, and JavaScript, leveraging tools like GitHub for version control and GitHub Copilot for assistance during development.",
+            "disclaimerHeading": "Disclaimer",
+            "disclaimerParagraph1": "The information and tools provided on this website, including the interest calculator, are for informational and illustrative purposes only. They are provided \"as is\" without warranty of any kind, express or implied.",
+            "disclaimerParagraph2": "The author (Erlndev Technologies) takes no responsibility for any errors or omissions in the content or calculations, nor for any actions taken based on the information provided. Users are solely responsible for verifying the accuracy and applicability of any information or calculation results before making any financial decisions.",
+            "disclaimerParagraph3": "By using this website, you agree that the author shall not be liable for any financial loss, damages, or other negative consequences arising from your use of this site or reliance on its content. Use this website entirely at your own risk.",
             // Calculator translations - EN
             "loanTypeLabel": "Loan Type:",
             "loanTypeAnnuity": "Annuity",
@@ -42,20 +45,23 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         no: {
             "menuHome": "Hjem",
-            "menuPage1": "Side 1",
-            "menuPage2": "Side 2",
-            "menuPage3": "Side 3", // New
-            "pageTitleIndex": "Landingsside",
-            "pageTitlePage1": "Side 1",
-            "pageTitlePage2": "Side 2",
-            "pageTitlePage3": "Rentekalkulator", // New
+            "menuAbout": "Om", // Renamed from menuPage1
+            "menuInterestCalc": "Rentekalk", // Renamed from menuPage3
+            "pageTitleIndex": "Erlndev | Landingsside", // Updated
+            "pageTitleAbout": "Erlndev | Om Denne Siden", // Updated
+            "pageTitleInterestCalc": "Erlndev | Rentekalkulator", // Updated
             "headingIndex": "Klikk på et menyelement øverst",
-            "headingPage1": "Hallo verden.",
-            "headingPage2": "Hallo verden 2",
-            "headingPage3": "Rentekalkulator", // New
+            "headingAbout": "Om Denne Siden", // Renamed from headingPage1
+            "headingInterestCalc": "Rentekalkulator", // Renamed from headingPage3
             "paragraphIndex": "Dette er innholdet på landingssiden.",
-            "paragraphPage1": "Dette er innholdet for Side 1.",
-            "paragraphPage2": "Dette er innholdet for Side 2.",
+            // About Page Content - NO
+            "aboutParagraph1": "Dette er en testside laget kun for moro skyld av Erlndev Technologies.",
+            "aboutParagraph2": "Den demonstrerer en enkel nettstedstruktur med flere sider, med funksjoner som en vedvarende navigasjonsmeny, språkbytte (engelsk/norsk) og en grunnleggende rentekalkulator.",
+            "aboutParagraph3": "Nettstedet ble utviklet med HTML, CSS og JavaScript, ved hjelp av verktøy som GitHub for versjonskontroll og GitHub Copilot for assistanse under utviklingen.",
+            "disclaimerHeading": "Ansvarsfraskrivelse",
+            "disclaimerParagraph1": "Informasjonen og verktøyene som tilbys på dette nettstedet, inkludert rentekalkulatoren, er kun ment for informasjons- og illustrasjonsformål. De leveres \"som de er\" uten noen form for garanti, verken uttrykt eller underforstått.",
+            "disclaimerParagraph2": "Forfatteren (Erlndev Technologies) tar intet ansvar for eventuelle feil eller mangler i innholdet eller beregningene, eller for handlinger som er basert på informasjonen som er gitt. Brukere er selv ansvarlige for å verifisere nøyaktigheten og anvendeligheten av all informasjon eller beregningsresultater før de tar økonomiske beslutninger.",
+            "disclaimerParagraph3": "Ved å bruke dette nettstedet godtar du at forfatteren ikke skal holdes ansvarlig for økonomisk tap, skader eller andre negative konsekvenser som følge av din bruk av nettstedet eller tillit til innholdet. Bruk dette nettstedet helt på egen risiko.",
             // Calculator translations - NO
             "loanTypeLabel": "Lånetype:",
             "loanTypeAnnuity": "Annuitet",
@@ -328,15 +334,20 @@ document.addEventListener('DOMContentLoaded', function() {
             const pathParts = window.location.href.split('/');
             currentPath = pathParts[pathParts.length - 1] || 'index.html';
             if (currentPath.includes('?')) currentPath = currentPath.split('?')[0];
+            // Ensure root path correctly maps to index.html for comparison
+            if (currentPath === '') currentPath = 'index.html';
         } else {
             currentPath = currentPath.substring(currentPath.lastIndexOf('/') + 1);
         }
+        // Ensure empty path after slash also maps to index.html
         const currentFile = currentPath || 'index.html';
 
         console.log(`Updating active menu state for path: ${currentFile}`);
         menuItems.forEach(item => {
             const itemHref = item.getAttribute('href');
-            const itemFile = itemHref ? (itemHref.split('/').pop() || 'index.html') : '';
+            // Ensure comparison handles potential leading slashes or relative paths consistently
+            const itemFile = itemHref ? (itemHref.split('/').pop() || 'index.html') : ''; // Default to index.html if href is just '/' or empty
+
             item.classList.remove('active');
             if (itemFile && currentFile === itemFile) {
                 item.classList.add('active');
