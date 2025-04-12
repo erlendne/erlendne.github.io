@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-translate="pageTitleInterestCalc">Interest Calculator</title> <!-- Updated Title Key -->
     <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml"> <!-- Add Favicon Link -->
 </head>
 <body>
     <nav class="menu-bar">
@@ -74,18 +75,31 @@
                 <input type="number" id="fee" value="0" min="0" step="any">
             </div>
 
+            <!-- New Input for Extra Down Payment -->
+            <div class="form-group">
+                <label for="extra-payment" data-translate="extraPaymentLabel">Extra Down Payment (Optional):</label>
+                <input type="number" id="extra-payment" value="0" min="0" step="any">
+            </div>
+
             <button type="button" id="calculate-btn" data-translate="calculateButton">Calculate</button>
         </form>
 
         <div id="calculator-results" class="calculator-results" style="margin-top: 20px;">
-            <h2 data-translate="resultsHeading">Results</h2>
+            <h2 data-translate="resultsHeading">Results (Without Extra Payment)</h2> <!-- Clarified heading -->
             <p><strong data-translate="resultsTotalPaid">Total Amount Paid:</strong> <span id="total-paid">0</span></p>
             <p><strong data-translate="resultsTotalInterest">Total Interest Paid:</strong> <span id="total-interest">0</span></p>
             <p><strong data-translate="resultsTotalDownPayment">Total Down Payments:</strong> <span id="total-down-payment">0</span></p>
             <p><strong data-translate="resultsTotalFees">Total Handling Fees:</strong> <span id="total-fees">0</span></p>
-            <p><strong data-translate="resultsPayoffDate">Payoff Date:</strong> <span id="payoff-date">-</span></p>
-            <!-- Optional: Add monthly payment display -->
-            <!-- <p><strong data-translate="resultsMonthlyPayment">Monthly Payment (First/Avg):</strong> <span id="monthly-payment">-</span></p> -->
+            <p><strong data-translate="resultsPayoffDate">Original Payoff Date:</strong> <span id="payoff-date">-</span></p> <!-- Clarified label -->
+        </div>
+
+        <!-- New Section for Savings Results -->
+        <div id="savings-results" class="calculator-results" style="margin-top: 20px; display: none;"> <!-- Initially hidden -->
+            <h2 data-translate="savingsHeading">Savings with Extra Payment</h2>
+            <p><strong data-translate="savingsInterestSaved">Interest Saved:</strong> <span id="interest-saved">0</span></p>
+            <p><strong data-translate="savingsTotalPaidNew">New Total Amount Paid:</strong> <span id="total-paid-new">0</span></p>
+            <p><strong data-translate="savingsPayoffDateNew">New Payoff Date:</strong> <span id="payoff-date-new">-</span></p>
+            <p><strong data-translate="savingsTermShortened">Term Shortened By:</strong> <span id="term-shortened">-</span></p>
         </div>
     </main>
 

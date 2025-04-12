@@ -33,14 +33,21 @@ document.addEventListener('DOMContentLoaded', function() {
             "termYears": "Years",
             "termMonths": "Months",
             "feeLabel": "Monthly Handling Fee:",
+            "extraPaymentLabel": "Extra Down Payment (Optional):", // New
             "calculateButton": "Calculate",
-            "resultsHeading": "Results",
+            "resultsHeading": "Results (Without Extra Payment)", // Updated
             "resultsTotalPaid": "Total Amount Paid:",
             "resultsTotalInterest": "Total Interest Paid:",
             "resultsTotalDownPayment": "Total Down Payments:",
             "resultsTotalFees": "Total Handling Fees:",
-            "resultsPayoffDate": "Payoff Date:",
-            "payoffDateFormat": "{month} {year}" // Format for date display
+            "resultsPayoffDate": "Original Payoff Date:", // Updated
+            "payoffDateFormat": "{month} {year}",
+            "savingsHeading": "Savings with Extra Payment", // New
+            "savingsInterestSaved": "Interest Saved:", // New
+            "savingsTotalPaidNew": "New Total Amount Paid:", // New
+            "savingsPayoffDateNew": "New Payoff Date:", // New
+            "savingsTermShortened": "Term Shortened By:", // New
+            "termShortenedFormat": "{years} years, {months} months" // New format string
         },
         no: {
             "menuHome": "Hjem",
@@ -70,14 +77,21 @@ document.addEventListener('DOMContentLoaded', function() {
             "termYears": "År",
             "termMonths": "Måneder",
             "feeLabel": "Månedlig gebyr:",
+            "extraPaymentLabel": "Ekstra nedbetaling (Valgfritt):", // New
             "calculateButton": "Beregn",
-            "resultsHeading": "Resultater",
+            "resultsHeading": "Resultater (Uten ekstra nedbetaling)", // Updated
             "resultsTotalPaid": "Totalt betalt:",
             "resultsTotalInterest": "Totale renter:",
             "resultsTotalDownPayment": "Totale avdrag:",
             "resultsTotalFees": "Totale gebyrer:",
-            "resultsPayoffDate": "Nedbetalt dato:",
-            "payoffDateFormat": "{month} {year}" // Format for date display (can be localized further if needed)
+            "resultsPayoffDate": "Opprinnelig nedbetalt dato:", // Updated
+            "payoffDateFormat": "{month} {year}",
+            "savingsHeading": "Besparelser med ekstra nedbetaling", // New
+            "savingsInterestSaved": "Renter spart:", // New
+            "savingsTotalPaidNew": "Nytt totalt betalt beløp:", // New
+            "savingsPayoffDateNew": "Ny nedbetalt dato:", // New
+            "savingsTermShortened": "Nedbetalingstid redusert med:", // New
+            "termShortenedFormat": "{years} år, {months} måneder" // New format string
         }
     };
 
@@ -212,48 +226,66 @@ document.addEventListener('DOMContentLoaded', function() {
         const yearsInput = document.getElementById('years');
         const monthsInput = document.getElementById('months');
         const feeInput = document.getElementById('fee');
+        const extraPaymentInput = document.getElementById('extra-payment'); // New input element
         const loanTypeInputs = document.querySelectorAll('input[name="loanType"]');
 
+        // Original results elements
         const totalPaidEl = document.getElementById('total-paid');
         const totalInterestEl = document.getElementById('total-interest');
         const totalDownPaymentEl = document.getElementById('total-down-payment');
         const totalFeesEl = document.getElementById('total-fees');
         const payoffDateEl = document.getElementById('payoff-date');
 
-        calculateBtn.addEventListener('click', () => {
-            console.log("Calculate button clicked.");
+        // Savings results elements
+        const savingsResultsEl = document.getElementById('savings-results'); // Container
+        const interestSavedEl = document.getElementById('interest-saved');
+        const totalPaidNewEl = document.getElementById('total-paid-new');
+        const payoffDateNewEl = document.getElementById('payoff-date-new');
+        const termShortenedEl = document.getElementById('term-shortened');
 
-            // Get and validate inputs
-            const loanType = document.querySelector('input[name="loanType"]:checked').value;
-            const principal = parseFloat(amountInput.value) || 0;
-            const annualRate = parseFloat(rateInput.value) || 0;
-            const years = parseInt(yearsInput.value) || 0;
-            const months = parseInt(monthsInput.value) || 0;
-            const monthlyFee = parseFloat(feeInput.value) || 0;
+        // Helper function to format numbers
+        const formatNumber = (num) => num.toLocaleString(currentLang === 'no' ? 'nb-NO' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+        // Helper function to format date
+        const formatDate = (date) => {
+             if (!(date instanceof Date) || isNaN(date)) return '-';
+             const currentTranslations = getTranslations(currentLang);
+             const monthNames = currentLang === 'no'
+                 ? ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"]
+                 : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+             return (currentTranslations.payoffDateFormat || "{month} {year}")
+                 .replace("{month}", monthNames[date.getMonth()])
+                 .replace("{year}", date.getFullYear());
+        };
+
+        // Helper function to format term difference
+        const formatTermDifference = (monthsDifference) => {
+            if (monthsDifference <= 0) return '-';
+            const years = Math.floor(monthsDifference / 12);
+            const months = monthsDifference % 12;
+            const currentTranslations = getTranslations(currentLang);
+            return (currentTranslations.termShortenedFormat || "{years} years, {months} months")
+                .replace("{years}", years)
+                .replace("{months}", months);
+        };
+
+        // Main calculation function (refactored)
+        function calculateLoanDetails(principal, annualRate, totalMonths, monthlyFee, loanType) {
             const monthlyRate = annualRate / 100 / 12;
-            const totalMonths = years * 12 + months;
-
             let totalPaid = 0;
             let totalInterest = 0;
             let totalFees = 0;
-            let payoffDate = new Date();
+            let actualTotalMonths = totalMonths; // May change for serial if principal is low
 
-            if (principal <= 0 || totalMonths <= 0 || annualRate < 0 || monthlyFee < 0) {
-                console.warn("Invalid input values for calculation.");
-                // Optionally display an error message to the user
-                totalPaidEl.textContent = '0';
-                totalInterestEl.textContent = '0';
-                totalDownPaymentEl.textContent = '0';
-                totalFeesEl.textContent = '-';
-                payoffDateEl.textContent = '-';
-                return;
+            if (principal <= 0 || totalMonths <= 0) {
+                return { totalPaid: 0, totalInterest: 0, totalFees: 0, payoffDate: null, actualTotalMonths: 0 };
             }
 
             totalFees = monthlyFee * totalMonths;
 
             if (loanType === 'annuity') {
                 if (monthlyRate > 0) {
+                    // Calculate monthly payment (principal + interest)
                     const monthlyPaymentRaw = principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
                     const monthlyPaymentWithFee = monthlyPaymentRaw + monthlyFee;
                     totalPaid = monthlyPaymentWithFee * totalMonths;
@@ -268,37 +300,121 @@ document.addEventListener('DOMContentLoaded', function() {
                 let remainingPrincipal = principal;
                 const monthlyDownPayment = principal / totalMonths;
                 totalInterest = 0;
-                for (let i = 0; i < totalMonths; i++) {
+                actualTotalMonths = 0; // Recalculate actual months for serial
+                for (let i = 0; i < totalMonths && remainingPrincipal > 0.005; i++) { // Loop until principal is near zero
                     const interestPayment = remainingPrincipal * monthlyRate;
                     totalInterest += interestPayment;
-                    remainingPrincipal -= monthlyDownPayment;
+                    const currentDownPayment = Math.min(monthlyDownPayment, remainingPrincipal); // Ensure last payment isn't too large
+                    remainingPrincipal -= currentDownPayment;
+                    actualTotalMonths++;
                 }
+                 // Recalculate fees based on actual months
+                totalFees = monthlyFee * actualTotalMonths;
                 totalPaid = principal + totalInterest + totalFees;
             }
 
-            // Calculate payoff date
-            if (totalMonths > 0) {
-                payoffDate.setMonth(payoffDate.getMonth() + totalMonths);
-                // Format date based on locale (simple example)
-                const currentTranslations = getTranslations(currentLang);
-                const monthNames = currentLang === 'no'
-                    ? ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"]
-                    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-                const formattedDate = (currentTranslations.payoffDateFormat || "{month} {year}")
-                    .replace("{month}", monthNames[payoffDate.getMonth()])
-                    .replace("{year}", payoffDate.getFullYear());
-                payoffDateEl.textContent = formattedDate;
-            } else {
-                payoffDateEl.textContent = '-';
+            let payoffDate = null;
+            if (actualTotalMonths > 0) {
+                payoffDate = new Date();
+                payoffDate.setMonth(payoffDate.getMonth() + actualTotalMonths);
             }
 
-            // Display results (formatted to 2 decimal places)
-            const formatNumber = (num) => num.toLocaleString(currentLang === 'no' ? 'nb-NO' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return { totalPaid, totalInterest, totalFees, payoffDate, actualTotalMonths };
+        }
 
-            totalPaidEl.textContent = formatNumber(totalPaid);
-            totalInterestEl.textContent = formatNumber(totalInterest);
-            totalDownPaymentEl.textContent = formatNumber(principal); // Total down payment is always the principal
-            totalFeesEl.textContent = formatNumber(totalFees);
+
+        calculateBtn.addEventListener('click', () => {
+            console.log("Calculate button clicked.");
+
+            // Get and validate inputs
+            const loanType = document.querySelector('input[name="loanType"]:checked').value;
+            const principal_orig = parseFloat(amountInput.value) || 0;
+            const annualRate = parseFloat(rateInput.value) || 0;
+            const years = parseInt(yearsInput.value) || 0;
+            const months = parseInt(monthsInput.value) || 0;
+            const monthlyFee = parseFloat(feeInput.value) || 0;
+            const extraPayment = parseFloat(extraPaymentInput.value) || 0;
+
+            const totalMonths_orig = years * 12 + months;
+
+            // --- Original Calculation ---
+            if (principal_orig <= 0 || totalMonths_orig <= 0 || annualRate < 0 || monthlyFee < 0) {
+                console.warn("Invalid input values for original calculation.");
+                totalPaidEl.textContent = '0';
+                totalInterestEl.textContent = '0';
+                totalDownPaymentEl.textContent = '0'; // Principal is the total down payment
+                totalFeesEl.textContent = '0';
+                payoffDateEl.textContent = '-';
+                savingsResultsEl.style.display = 'none'; // Hide savings section
+                return;
+            }
+
+            const originalCalc = calculateLoanDetails(principal_orig, annualRate, totalMonths_orig, monthlyFee, loanType);
+
+            totalPaidEl.textContent = formatNumber(originalCalc.totalPaid);
+            totalInterestEl.textContent = formatNumber(originalCalc.totalInterest);
+            totalDownPaymentEl.textContent = formatNumber(principal_orig);
+            totalFeesEl.textContent = formatNumber(originalCalc.totalFees);
+            payoffDateEl.textContent = formatDate(originalCalc.payoffDate);
+
+            // --- Calculation with Extra Payment ---
+            if (extraPayment > 0 && extraPayment < principal_orig) {
+                const principal_new = principal_orig - extraPayment;
+
+                // For annuity, we keep the original term to see interest savings
+                // For serial, the term effectively shortens automatically due to lower principal
+                // Let's recalculate for both to find the *actual* new term and savings accurately.
+                // We need to find the new term for annuity if we keep the *original* monthly payment amount.
+
+                let newCalc;
+                let newTotalMonths = totalMonths_orig; // Start with original term
+
+                if (loanType === 'annuity' && originalCalc.totalInterest > 0) {
+                     // Calculate original monthly payment (interest + principal part)
+                     const monthlyRate = annualRate / 100 / 12;
+                     const originalMonthlyPaymentRaw = principal_orig * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths_orig)) / (Math.pow(1 + monthlyRate, totalMonths_orig) - 1);
+
+                     // Calculate new term with reduced principal but same monthly payment
+                     if (originalMonthlyPaymentRaw > principal_new * monthlyRate) { // Ensure payment covers at least interest
+                         newTotalMonths = Math.log(originalMonthlyPaymentRaw / (originalMonthlyPaymentRaw - principal_new * monthlyRate)) / Math.log(1 + monthlyRate);
+                         newTotalMonths = Math.ceil(newTotalMonths); // Round up to full months
+                     } else {
+                         // Edge case: payment doesn't cover interest (shouldn't happen with positive rates/principal)
+                         // Or if interest rate is 0
+                         newTotalMonths = Math.ceil(principal_new / originalMonthlyPaymentRaw);
+                     }
+                     // Recalculate details with the new principal and potentially shorter term
+                     newCalc = calculateLoanDetails(principal_new, annualRate, newTotalMonths, monthlyFee, loanType);
+
+                } else { // Serial loan or 0% interest annuity
+                    // For serial, the calculation inherently handles the reduced principal over the original term,
+                    // but the actual payoff happens sooner. We use the actualTotalMonths from the calculation.
+                    // For 0% annuity, term shortens proportionally.
+                     newCalc = calculateLoanDetails(principal_new, annualRate, totalMonths_orig, monthlyFee, loanType); // Calculate based on original term first
+                     newTotalMonths = newCalc.actualTotalMonths; // Use the actual months it took
+                     // Recalculate fees based on actual shorter term if needed (already done inside calculateLoanDetails for serial)
+                     if (loanType === 'annuity') { // Adjust fees for 0% annuity
+                         newCalc.totalFees = monthlyFee * newTotalMonths;
+                         newCalc.totalPaid = principal_new + newCalc.totalInterest + newCalc.totalFees;
+                     }
+                }
+
+
+                const interestSaved = originalCalc.totalInterest - newCalc.totalInterest;
+                const termShortenedMonths = originalCalc.actualTotalMonths - newCalc.actualTotalMonths;
+
+                interestSavedEl.textContent = formatNumber(interestSaved);
+                totalPaidNewEl.textContent = formatNumber(newCalc.totalPaid);
+                payoffDateNewEl.textContent = formatDate(newCalc.payoffDate);
+                termShortenedEl.textContent = formatTermDifference(termShortenedMonths);
+
+                savingsResultsEl.style.display = 'block'; // Show savings section
+                console.log("Savings calculation complete.");
+
+            } else {
+                savingsResultsEl.style.display = 'none'; // Hide savings section if no valid extra payment
+                console.log("No valid extra payment entered, hiding savings section.");
+            }
 
             console.log("Calculation complete. Results updated.");
         });
