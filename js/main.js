@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
             "termYears": "Years",
             "termMonths": "Months",
             "feeLabel": "Monthly Handling Fee:",
-            "extraPaymentLabel": "Extra Down Payment (Optional):", // New
+            "extraPaymentLabel": "Extra Down Payment (Optional):",
+            "taxDeductionLabel": "Deduct 22% tax reduction from savings", // New
             "calculateButton": "Calculate",
             "resultsHeading": "Results (Without Extra Payment)", // Updated
             "resultsTotalPaid": "Total Amount Paid:",
@@ -77,7 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
             "termYears": "År",
             "termMonths": "Måneder",
             "feeLabel": "Månedlig gebyr:",
-            "extraPaymentLabel": "Ekstra nedbetaling (Valgfritt):", // New
+            "extraPaymentLabel": "Ekstra nedbetaling (Valgfritt):",
+            "taxDeductionLabel": "Trekk fra 22% skattefradrag fra besparelse", // New
             "calculateButton": "Beregn",
             "resultsHeading": "Resultater (Uten ekstra nedbetaling)", // Updated
             "resultsTotalPaid": "Totalt betalt:",
@@ -226,7 +228,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const yearsInput = document.getElementById('years');
         const monthsInput = document.getElementById('months');
         const feeInput = document.getElementById('fee');
-        const extraPaymentInput = document.getElementById('extra-payment'); // New input element
+        const extraPaymentInput = document.getElementById('extra-payment');
+        const taxDeductionCheckbox = document.getElementById('tax-deduction-checkbox'); // New checkbox element
         const loanTypeInputs = document.querySelectorAll('input[name="loanType"]');
 
         // Original results elements
@@ -334,6 +337,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const months = parseInt(monthsInput.value) || 0;
             const monthlyFee = parseFloat(feeInput.value) || 0;
             const extraPayment = parseFloat(extraPaymentInput.value) || 0;
+            const applyTaxDeduction = taxDeductionCheckbox.checked; // Read checkbox state
+            const taxRate = 0.22; // Define tax rate
 
             const totalMonths_orig = years * 12 + months;
 
@@ -360,11 +365,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // --- Calculation with Extra Payment ---
             if (extraPayment > 0 && extraPayment < principal_orig) {
                 const principal_new = principal_orig - extraPayment;
-
-                // For annuity, we keep the original term to see interest savings
-                // For serial, the term effectively shortens automatically due to lower principal
-                // Let's recalculate for both to find the *actual* new term and savings accurately.
-                // We need to find the new term for annuity if we keep the *original* monthly payment amount.
 
                 let newCalc;
                 let newTotalMonths = totalMonths_orig; // Start with original term
@@ -400,19 +400,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
 
-                const interestSaved = originalCalc.totalInterest - newCalc.totalInterest;
+                // Calculate Gross Interest Saved
+                const grossInterestSaved = originalCalc.totalInterest - newCalc.totalInterest;
+
+                // Calculate Net Interest Saved if tax deduction is applied
+                const interestSaved = applyTaxDeduction ? (grossInterestSaved * (1 - taxRate)) : grossInterestSaved;
+
                 const termShortenedMonths = originalCalc.actualTotalMonths - newCalc.actualTotalMonths;
 
+                // Display Savings Results (Interest Saved now reflects potential tax deduction)
                 interestSavedEl.textContent = formatNumber(interestSaved);
-                totalPaidNewEl.textContent = formatNumber(newCalc.totalPaid);
+                totalPaidNewEl.textContent = formatNumber(newCalc.totalPaid); // Total paid doesn't change based on tax deduction
                 payoffDateNewEl.textContent = formatDate(newCalc.payoffDate);
                 termShortenedEl.textContent = formatTermDifference(termShortenedMonths);
 
-                savingsResultsEl.style.display = 'block'; // Show savings section
-                console.log("Savings calculation complete.");
+                savingsResultsEl.style.display = 'block';
+                console.log(`Savings calculation complete. Tax deduction applied: ${applyTaxDeduction}`);
 
             } else {
-                savingsResultsEl.style.display = 'none'; // Hide savings section if no valid extra payment
+                savingsResultsEl.style.display = 'none';
                 console.log("No valid extra payment entered, hiding savings section.");
             }
 
