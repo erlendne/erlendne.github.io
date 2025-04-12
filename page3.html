@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="pageTitlePage3">Interest Calculator</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="menu-bar">
+        <!-- Hamburger Button (visible on mobile) -->
+        <button class="hamburger-menu" aria-label="Toggle menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <!-- Container for menu items and language selector (for mobile toggle) -->
+        <div class="nav-content">
+            <div class="menu-container">
+                <a href="index.html" class="menu-item" data-translate="menuHome">Home</a>
+                <a href="page1.html" class="menu-item" data-translate="menuPage1">Page 1</a>
+                <a href="page2.html" class="menu-item" data-translate="menuPage2">Page 2</a>
+                <a href="page3.html" class="menu-item" data-translate="menuPage3">Page 3</a> <!-- New Link -->
+            </div>
+            <div class="language-selector-container">
+                <select id="language-selector">
+                    <option value="en">English</option>
+                    <option value="no">Norsk</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <h1 data-translate="headingPage3">Interest Calculator</h1>
+
+        <form id="calculator-form" class="calculator-form">
+            <div class="form-group">
+                <label data-translate="loanTypeLabel">Loan Type:</label>
+                <div>
+                    <input type="radio" id="annuity" name="loanType" value="annuity" checked>
+                    <label for="annuity" data-translate="loanTypeAnnuity">Annuity</label>
+                </div>
+                <div>
+                    <input type="radio" id="serial" name="loanType" value="serial">
+                    <label for="serial" data-translate="loanTypeSerial">Serial</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="amount" data-translate="amountLabel">Amount Borrowed:</label>
+                <input type="number" id="amount" value="0" min="0" step="any">
+            </div>
+
+            <div class="form-group">
+                <label for="rate" data-translate="rateLabel">Interest Rate (%):</label>
+                <input type="number" id="rate" value="0" min="0" step="any">
+            </div>
+
+            <div class="form-group form-group-inline">
+                <label data-translate="termLabel">Down Payment Term:</label>
+                <div>
+                    <input type="number" id="years" value="0" min="0" step="1">
+                    <label for="years" data-translate="termYears">Years</label>
+                </div>
+                <div>
+                    <input type="number" id="months" value="0" min="0" max="11" step="1">
+                    <label for="months" data-translate="termMonths">Months</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="fee" data-translate="feeLabel">Monthly Handling Fee:</label>
+                <input type="number" id="fee" value="0" min="0" step="any">
+            </div>
+
+            <button type="button" id="calculate-btn" data-translate="calculateButton">Calculate</button>
+        </form>
+
+        <div id="calculator-results" class="calculator-results" style="margin-top: 20px;">
+            <h2 data-translate="resultsHeading">Results</h2>
+            <p><strong data-translate="resultsTotalPaid">Total Amount Paid:</strong> <span id="total-paid">0</span></p>
+            <p><strong data-translate="resultsTotalInterest">Total Interest Paid:</strong> <span id="total-interest">0</span></p>
+            <p><strong data-translate="resultsTotalDownPayment">Total Down Payments:</strong> <span id="total-down-payment">0</span></p>
+            <p><strong data-translate="resultsTotalFees">Total Handling Fees:</strong> <span id="total-fees">0</span></p>
+            <p><strong data-translate="resultsPayoffDate">Payoff Date:</strong> <span id="payoff-date">-</span></p>
+            <!-- Optional: Add monthly payment display -->
+            <!-- <p><strong data-translate="resultsMonthlyPayment">Monthly Payment (First/Avg):</strong> <span id="monthly-payment">-</span></p> -->
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

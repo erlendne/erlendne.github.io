@@ -9,29 +9,71 @@ document.addEventListener('DOMContentLoaded', function() {
             "menuHome": "Home",
             "menuPage1": "Page 1",
             "menuPage2": "Page 2",
+            "menuPage3": "Page 3", // New
             "pageTitleIndex": "Landing Page",
             "pageTitlePage1": "Page 1",
             "pageTitlePage2": "Page 2",
+            "pageTitlePage3": "Interest Calculator", // New
             "headingIndex": "Click a menu item at the top",
             "headingPage1": "Hello world.",
             "headingPage2": "Hello world 2",
+            "headingPage3": "Interest Calculator", // New
             "paragraphIndex": "This is the landing page content.",
             "paragraphPage1": "This is the content for Page 1.",
-            "paragraphPage2": "This is the content for Page 2."
+            "paragraphPage2": "This is the content for Page 2.",
+            // Calculator translations - EN
+            "loanTypeLabel": "Loan Type:",
+            "loanTypeAnnuity": "Annuity",
+            "loanTypeSerial": "Serial",
+            "amountLabel": "Amount Borrowed:",
+            "rateLabel": "Interest Rate (%):",
+            "termLabel": "Down Payment Term:",
+            "termYears": "Years",
+            "termMonths": "Months",
+            "feeLabel": "Monthly Handling Fee:",
+            "calculateButton": "Calculate",
+            "resultsHeading": "Results",
+            "resultsTotalPaid": "Total Amount Paid:",
+            "resultsTotalInterest": "Total Interest Paid:",
+            "resultsTotalDownPayment": "Total Down Payments:",
+            "resultsTotalFees": "Total Handling Fees:",
+            "resultsPayoffDate": "Payoff Date:",
+            "payoffDateFormat": "{month} {year}" // Format for date display
         },
         no: {
             "menuHome": "Hjem",
             "menuPage1": "Side 1",
             "menuPage2": "Side 2",
+            "menuPage3": "Side 3", // New
             "pageTitleIndex": "Landingsside",
             "pageTitlePage1": "Side 1",
             "pageTitlePage2": "Side 2",
+            "pageTitlePage3": "Rentekalkulator", // New
             "headingIndex": "Klikk på et menyelement øverst",
             "headingPage1": "Hallo verden.",
             "headingPage2": "Hallo verden 2",
+            "headingPage3": "Rentekalkulator", // New
             "paragraphIndex": "Dette er innholdet på landingssiden.",
             "paragraphPage1": "Dette er innholdet for Side 1.",
-            "paragraphPage2": "Dette er innholdet for Side 2."
+            "paragraphPage2": "Dette er innholdet for Side 2.",
+            // Calculator translations - NO
+            "loanTypeLabel": "Lånetype:",
+            "loanTypeAnnuity": "Annuitet",
+            "loanTypeSerial": "Serie",
+            "amountLabel": "Lånebeløp:",
+            "rateLabel": "Rente (%):",
+            "termLabel": "Nedbetalingstid:",
+            "termYears": "År",
+            "termMonths": "Måneder",
+            "feeLabel": "Månedlig gebyr:",
+            "calculateButton": "Beregn",
+            "resultsHeading": "Resultater",
+            "resultsTotalPaid": "Totalt betalt:",
+            "resultsTotalInterest": "Totale renter:",
+            "resultsTotalDownPayment": "Totale avdrag:",
+            "resultsTotalFees": "Totale gebyrer:",
+            "resultsPayoffDate": "Nedbetalt dato:",
+            "payoffDateFormat": "{month} {year}" // Format for date display (can be localized further if needed)
         }
     };
 
@@ -155,6 +197,109 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.warn("Hamburger button or nav content element not found.");
+    }
+
+    // --- Interest Calculator Logic ---
+    const calculatorForm = document.getElementById('calculator-form');
+    if (calculatorForm) {
+        const calculateBtn = document.getElementById('calculate-btn');
+        const amountInput = document.getElementById('amount');
+        const rateInput = document.getElementById('rate');
+        const yearsInput = document.getElementById('years');
+        const monthsInput = document.getElementById('months');
+        const feeInput = document.getElementById('fee');
+        const loanTypeInputs = document.querySelectorAll('input[name="loanType"]');
+
+        const totalPaidEl = document.getElementById('total-paid');
+        const totalInterestEl = document.getElementById('total-interest');
+        const totalDownPaymentEl = document.getElementById('total-down-payment');
+        const totalFeesEl = document.getElementById('total-fees');
+        const payoffDateEl = document.getElementById('payoff-date');
+
+        calculateBtn.addEventListener('click', () => {
+            console.log("Calculate button clicked.");
+
+            // Get and validate inputs
+            const loanType = document.querySelector('input[name="loanType"]:checked').value;
+            const principal = parseFloat(amountInput.value) || 0;
+            const annualRate = parseFloat(rateInput.value) || 0;
+            const years = parseInt(yearsInput.value) || 0;
+            const months = parseInt(monthsInput.value) || 0;
+            const monthlyFee = parseFloat(feeInput.value) || 0;
+
+            const monthlyRate = annualRate / 100 / 12;
+            const totalMonths = years * 12 + months;
+
+            let totalPaid = 0;
+            let totalInterest = 0;
+            let totalFees = 0;
+            let payoffDate = new Date();
+
+            if (principal <= 0 || totalMonths <= 0 || annualRate < 0 || monthlyFee < 0) {
+                console.warn("Invalid input values for calculation.");
+                // Optionally display an error message to the user
+                totalPaidEl.textContent = '0';
+                totalInterestEl.textContent = '0';
+                totalDownPaymentEl.textContent = '0';
+                totalFeesEl.textContent = '-';
+                payoffDateEl.textContent = '-';
+                return;
+            }
+
+            totalFees = monthlyFee * totalMonths;
+
+            if (loanType === 'annuity') {
+                if (monthlyRate > 0) {
+                    const monthlyPaymentRaw = principal * (monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+                    const monthlyPaymentWithFee = monthlyPaymentRaw + monthlyFee;
+                    totalPaid = monthlyPaymentWithFee * totalMonths;
+                    totalInterest = totalPaid - principal - totalFees;
+                } else { // Handle 0% interest rate
+                    const monthlyPaymentRaw = principal / totalMonths;
+                    const monthlyPaymentWithFee = monthlyPaymentRaw + monthlyFee;
+                    totalPaid = monthlyPaymentWithFee * totalMonths;
+                    totalInterest = 0;
+                }
+            } else if (loanType === 'serial') {
+                let remainingPrincipal = principal;
+                const monthlyDownPayment = principal / totalMonths;
+                totalInterest = 0;
+                for (let i = 0; i < totalMonths; i++) {
+                    const interestPayment = remainingPrincipal * monthlyRate;
+                    totalInterest += interestPayment;
+                    remainingPrincipal -= monthlyDownPayment;
+                }
+                totalPaid = principal + totalInterest + totalFees;
+            }
+
+            // Calculate payoff date
+            if (totalMonths > 0) {
+                payoffDate.setMonth(payoffDate.getMonth() + totalMonths);
+                // Format date based on locale (simple example)
+                const currentTranslations = getTranslations(currentLang);
+                const monthNames = currentLang === 'no'
+                    ? ["Januar", "Februar", "Mars", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Desember"]
+                    : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const formattedDate = (currentTranslations.payoffDateFormat || "{month} {year}")
+                    .replace("{month}", monthNames[payoffDate.getMonth()])
+                    .replace("{year}", payoffDate.getFullYear());
+                payoffDateEl.textContent = formattedDate;
+            } else {
+                payoffDateEl.textContent = '-';
+            }
+
+            // Display results (formatted to 2 decimal places)
+            const formatNumber = (num) => num.toLocaleString(currentLang === 'no' ? 'nb-NO' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            totalPaidEl.textContent = formatNumber(totalPaid);
+            totalInterestEl.textContent = formatNumber(totalInterest);
+            totalDownPaymentEl.textContent = formatNumber(principal); // Total down payment is always the principal
+            totalFeesEl.textContent = formatNumber(totalFees);
+
+            console.log("Calculation complete. Results updated.");
+        });
+    } else {
+        console.log("Calculator form not found on this page.");
     }
 
     // --- Initialize Page ---

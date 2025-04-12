@@ -29,12 +29,13 @@ body {
 
 /* Hide hamburger on larger screens */
 .hamburger-menu {
-    display: none;
+    display: none; /* Ensures it takes no space on desktop */
     background: none;
     border: none;
     cursor: pointer;
     padding: 10px;
     z-index: 1010; /* Ensure it's above nav-content */
+    flex-shrink: 0; /* Prevent hamburger from shrinking */
 }
 
 .hamburger-menu span {
@@ -87,6 +88,7 @@ body {
 .language-selector-container {
     display: flex;
     align-items: center;
+    flex-shrink: 0; /* Prevent selector from shrinking */
 }
 
 #language-selector {
@@ -111,6 +113,115 @@ h1 {
     margin-bottom: 1rem;
 }
 
+/* Calculator Form Styles */
+.calculator-form {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px; /* Limit form width */
+    margin: 20px auto; /* Center form */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.form-group input[type="number"],
+.form-group input[type="text"] { /* Added text for potential future use */
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Include padding in width */
+    font-size: 1rem;
+}
+
+.form-group input[type="radio"] {
+    margin-right: 5px;
+}
+
+.form-group div label { /* Labels next to radio/checkbox */
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 15px;
+    font-weight: normal;
+}
+
+/* Inline group for years/months */
+.form-group-inline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.form-group-inline > label { /* Main label for the group */
+    flex-basis: 100%; /* Take full width initially */
+    margin-bottom: 5px;
+}
+
+.form-group-inline > div { /* Container for input + label */
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+    margin-bottom: 5px; /* Spacing when wrapped */
+}
+
+.form-group-inline input[type="number"] {
+    width: 70px; /* Fixed width for year/month inputs */
+    margin-right: 5px;
+}
+
+.form-group-inline div label { /* Label next to year/month input */
+    margin-right: 0;
+}
+
+#calculate-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#calculate-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Calculator Results Styles */
+.calculator-results {
+    background-color: #e9ecef;
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.calculator-results h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.calculator-results p {
+    margin: 8px 0;
+}
+
+.calculator-results strong {
+    display: inline-block;
+    min-width: 180px; /* Align result values */
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .menu-bar {
@@ -122,7 +233,7 @@ h1 {
 
     /* Show hamburger */
     .hamburger-menu {
-        display: block;
+        display: block; /* Show hamburger on mobile */
     }
 
     /* Style nav-content for mobile overlay */
@@ -140,6 +251,7 @@ h1 {
         padding-top: 60px; /* Space below menu bar */
         z-index: 1005; /* Below hamburger but above page content */
         box-sizing: border-box;
+        flex-grow: 0; /* Reset flex-grow for overlay */
     }
 
     /* Show nav-content when menu is open */
@@ -193,6 +305,34 @@ h1 {
 
     body {
         padding-top: 120px; /* Adjust body padding if menu wraps and takes more space */
+    }
+
+    .calculator-form,
+    .calculator-results {
+        max-width: 100%; /* Allow form/results to take full width */
+        padding: 15px;
+    }
+
+    .form-group-inline {
+        flex-direction: column; /* Stack year/month vertically */
+        align-items: flex-start;
+    }
+
+    .form-group-inline > div {
+        margin-right: 0; /* Remove right margin when stacked */
+        width: 100%; /* Allow full width */
+    }
+     .form-group-inline input[type="number"] {
+        width: auto; /* Allow input to size naturally or use flex-grow */
+        flex-grow: 1; /* Allow input to grow */
+        margin-right: 10px;
+    }
+     .form-group-inline div label {
+        white-space: nowrap; /* Prevent label text wrapping */
+    }
+
+    .calculator-results strong {
+        min-width: 150px; /* Adjust alignment width for mobile */
     }
 }
 
