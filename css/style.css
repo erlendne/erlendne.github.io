@@ -21,8 +21,10 @@ body {
     z-index: 1000; /* Ensure menu stays on top */
     height: 60px; /* Fixed height */
     display: flex;
-    justify-content: center; /* Center menu items horizontally */
+    justify-content: space-between; /* Space between menu items and language selector */
     align-items: center; /* Center menu items vertically */
+    padding: 0 20px; /* Add padding to space out elements */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .menu-container {
@@ -53,6 +55,22 @@ body {
     color: #ffffff; /* White text for active item */
 }
 
+/* Language Selector Styling */
+.language-selector-container {
+    display: flex;
+    align-items: center;
+}
+
+#language-selector {
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
 /* Main Content Container */
 .container {
     max-width: 960px; /* Limit content width */
@@ -68,18 +86,28 @@ h1 {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .menu-bar {
+        flex-direction: column; /* Stack menu and selector vertically */
         height: auto; /* Allow height to adjust */
-        padding: 10px 0;
+        padding: 10px;
     }
     .menu-container {
         flex-wrap: wrap; /* Allow items to wrap on smaller screens */
-        justify-content: center;
+        margin-bottom: 10px; /* Add space below menu items */
+        justify-content: center; /* Center menu items when stacked */
     }
     .menu-item {
         margin: 5px; /* Adjust margin for wrapped items */
     }
+    .language-selector-container {
+        width: 100%;
+        justify-content: center; /* Center the language selector */
+    }
+    #language-selector {
+        width: auto; /* Adjust width */
+        max-width: 150px;
+    }
     body {
-        padding-top: 100px; /* Adjust body padding if menu wraps and takes more space */
+        padding-top: 120px; /* Adjust body padding if menu wraps and takes more space */
     }
 }
 

@@ -1,0 +1,14 @@
+{
+    "menuHome": "Home",
+    "menuPage1": "Page 1",
+    "menuPage2": "Page 2",
+    "pageTitleIndex": "Landing Page",
+    "pageTitlePage1": "Page 1",
+    "pageTitlePage2": "Page 2",
+    "headingIndex": "Click a menu item at the top",
+    "headingPage1": "Hello world.",
+    "headingPage2": "Hello world 2",
+    "paragraphIndex": "This is the landing page content.",
+    "paragraphPage1": "This is the content for Page 1.",
+    "paragraphPage2": "This is the content for Page 2."
+}

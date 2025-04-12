@@ -3,21 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Page 2</title>
+    <title data-translate="pageTitlePage2">Page 2</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <nav class="menu-bar">
         <div class="menu-container">
-            <a href="index.html" class="menu-item">Home</a>
-            <a href="page1.html" class="menu-item">Page 1</a>
-            <a href="page2.html" class="menu-item">Page 2</a>
+            <a href="index.html" class="menu-item" data-translate="menuHome">Home</a>
+            <a href="page1.html" class="menu-item" data-translate="menuPage1">Page 1</a>
+            <a href="page2.html" class="menu-item" data-translate="menuPage2">Page 2</a>
+        </div>
+        <div class="language-selector-container">
+            <select id="language-selector">
+                <option value="en">English</option>
+                <option value="no">Norsk</option>
+            </select>
         </div>
     </nav>
 
     <main class="container">
-        <h1>Hello world 2</h1>
-        <p>This is the content for Page 2.</p>
+        <h1 data-translate="headingPage2">Hello world 2</h1>
+        <p data-translate="paragraphPage2">This is the content for Page 2.</p>
     </main>
 
     <script src="js/main.js"></script>
