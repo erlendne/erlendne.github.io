@@ -9,20 +9,19 @@ document.addEventListener('DOMContentLoaded', function() {
             "menuHome": "Home",
             "menuAbout": "About", // Renamed from menuPage1
             "menuInterestCalc": "Interest Calc", // Renamed from menuPage3
-            "pageTitleIndex": "Erlndev | Landing Page", // Updated
-            "pageTitleAbout": "Erlndev | About This Site", // Updated
-            "pageTitleInterestCalc": "Erlndev | Interest Calculator", // Updated
-            "headingIndex": "Click a menu item at the top",
+            "pageTitleIndex": "SynDrm | Welcome", // Updated
+            "pageTitleAbout": "SynDrm | About This Site", // Updated
+            "pageTitleInterestCalc": "SynDrm | Interest Calculator", // Updated
+            "headingIndex": "Welcome to Syntax Dreamer", // Updated
             "headingAbout": "About This Site", // Renamed from headingPage1
             "headingInterestCalc": "Interest Calculator", // Renamed from headingPage3
-            "paragraphIndex": "This is the landing page content.",
             // About Page Content - EN
-            "aboutParagraph1": "This is a test page created just for fun by Erlndev Technologies.",
+            "aboutParagraph1": "This is a test page created just for fun by Syntax Dreamer.", // Updated
             "aboutParagraph2": "It demonstrates a simple multi-page website structure with features like a persistent navigation menu, language switching (English/Norwegian), and a basic interest calculator.",
             "aboutParagraph3": "The site was developed using HTML, CSS, and JavaScript, leveraging tools like GitHub for version control and GitHub Copilot for assistance during development.",
             "disclaimerHeading": "Disclaimer",
             "disclaimerParagraph1": "The information and tools provided on this website, including the interest calculator, are for informational and illustrative purposes only. They are provided \"as is\" without warranty of any kind, express or implied.",
-            "disclaimerParagraph2": "The author (Erlndev Technologies) takes no responsibility for any errors or omissions in the content or calculations, nor for any actions taken based on the information provided. Users are solely responsible for verifying the accuracy and applicability of any information or calculation results before making any financial decisions.",
+            "disclaimerParagraph2": "The author (Syntax Dreamer) takes no responsibility for any errors or omissions in the content or calculations, nor for any actions taken based on the information provided. Users are solely responsible for verifying the accuracy and applicability of any information or calculation results before making any financial decisions.", // Updated
             "disclaimerParagraph3": "By using this website, you agree that the author shall not be liable for any financial loss, damages, or other negative consequences arising from your use of this site or reliance on its content. Use this website entirely at your own risk.",
             // Calculator translations - EN
             "loanTypeLabel": "Loan Type:",
@@ -47,20 +46,19 @@ document.addEventListener('DOMContentLoaded', function() {
             "menuHome": "Hjem",
             "menuAbout": "Om", // Renamed from menuPage1
             "menuInterestCalc": "Rentekalk", // Renamed from menuPage3
-            "pageTitleIndex": "Erlndev | Landingsside", // Updated
-            "pageTitleAbout": "Erlndev | Om Denne Siden", // Updated
-            "pageTitleInterestCalc": "Erlndev | Rentekalkulator", // Updated
-            "headingIndex": "Klikk på et menyelement øverst",
+            "pageTitleIndex": "SynDrm | Velkommen", // Updated
+            "pageTitleAbout": "SynDrm | Om Denne Siden", // Updated
+            "pageTitleInterestCalc": "SynDrm | Rentekalkulator", // Updated
+            "headingIndex": "Velkommen til Syntax Dreamer", // Updated
             "headingAbout": "Om Denne Siden", // Renamed from headingPage1
             "headingInterestCalc": "Rentekalkulator", // Renamed from headingPage3
-            "paragraphIndex": "Dette er innholdet på landingssiden.",
             // About Page Content - NO
-            "aboutParagraph1": "Dette er en testside laget kun for moro skyld av Erlndev Technologies.",
+            "aboutParagraph1": "Dette er en testside laget kun for moro skyld av Syntax Dreamer.", // Updated
             "aboutParagraph2": "Den demonstrerer en enkel nettstedstruktur med flere sider, med funksjoner som en vedvarende navigasjonsmeny, språkbytte (engelsk/norsk) og en grunnleggende rentekalkulator.",
             "aboutParagraph3": "Nettstedet ble utviklet med HTML, CSS og JavaScript, ved hjelp av verktøy som GitHub for versjonskontroll og GitHub Copilot for assistanse under utviklingen.",
             "disclaimerHeading": "Ansvarsfraskrivelse",
             "disclaimerParagraph1": "Informasjonen og verktøyene som tilbys på dette nettstedet, inkludert rentekalkulatoren, er kun ment for informasjons- og illustrasjonsformål. De leveres \"som de er\" uten noen form for garanti, verken uttrykt eller underforstått.",
-            "disclaimerParagraph2": "Forfatteren (Erlndev Technologies) tar intet ansvar for eventuelle feil eller mangler i innholdet eller beregningene, eller for handlinger som er basert på informasjonen som er gitt. Brukere er selv ansvarlige for å verifisere nøyaktigheten og anvendeligheten av all informasjon eller beregningsresultater før de tar økonomiske beslutninger.",
+            "disclaimerParagraph2": "Forfatteren (Syntax Dreamer) tar intet ansvar for eventuelle feil eller mangler i innholdet eller beregningene, eller for handlinger som er basert på informasjonen som er gitt. Brukere er selv ansvarlige for å verifisere nøyaktigheten og anvendeligheten av all informasjon eller beregningsresultater før de tar økonomiske beslutninger.", // Updated
             "disclaimerParagraph3": "Ved å bruke dette nettstedet godtar du at forfatteren ikke skal holdes ansvarlig for økonomisk tap, skader eller andre negative konsekvenser som følge av din bruk av nettstedet eller tillit til innholdet. Bruk dette nettstedet helt på egen risiko.",
             // Calculator translations - NO
             "loanTypeLabel": "Lånetype:",
