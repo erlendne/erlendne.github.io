@@ -1,0 +1,97 @@
+/* Styles for the Syntax Dreamer Logo */
+
+.dream-logo-container {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 30px auto 20px; /* Center logo and add spacing */
+    /* border: 1px dashed #ccc; /* Optional: for positioning help */
+    /* overflow: hidden; */ /* Removed to prevent potential clipping */
+}
+
+.dream-swirl {
+    position: absolute;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: transparent;
+    opacity: 0.8;
+}
+
+/* Swirl 1 - Outer Purple */
+.dream-swirl-1 {
+    width: 100px;
+    height: 100px;
+    border-width: 5px;
+    border-top-color: #8A2BE2; /* BlueViolet */
+    border-right-color: #8A2BE2;
+    top: 10px;
+    left: 10px;
+    animation: dream-rotate 40s linear infinite;
+}
+
+/* Swirl 2 - Inner Black */
+.dream-swirl-2 {
+    width: 70px;
+    height: 70px;
+    border-width: 4px;
+    border-bottom-color: #1a1a1a; /* Dark Black */
+    border-left-color: #1a1a1a;
+    top: 25px;
+    left: 25px;
+    animation: dream-rotate-reverse 18s ease-in-out infinite;
+}
+
+/* Swirl 3 - Middle Purple Dashed */
+.dream-swirl-3 {
+    width: 85px;
+    height: 85px;
+    border-width: 2px;
+    border-style: dashed;
+    border-color: #9370DB; /* MediumPurple */
+    top: 17.5px;
+    left: 17.5px;
+    animation: dream-rotate 55s linear infinite reverse;
+    opacity: 0.6;
+}
+
+/* Animation Keyframes */
+@keyframes dream-rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes dream-rotate-reverse {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .dream-logo-container {
+        width: 90px;
+        height: 90px;
+        margin-top: 20px;
+    }
+
+    .dream-swirl-1 {
+        width: 75px;
+        height: 75px;
+        border-width: 4px;
+        top: 7.5px;
+        left: 7.5px;
+    }
+    .dream-swirl-2 {
+        width: 52.5px;
+        height: 52.5px;
+        border-width: 3px;
+        top: 18.75px;
+        left: 18.75px;
+    }
+     .dream-swirl-3 {
+        width: 63.75px;
+        height: 63.75px;
+        border-width: 1px;
+        top: 13.125px;
+        left: 13.125px;
+    }
+}

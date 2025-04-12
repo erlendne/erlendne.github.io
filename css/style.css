@@ -106,6 +106,7 @@ body {
     max-width: 960px; /* Limit content width */
     margin: 20px auto; /* Center container and add space below menu */
     padding: 0 15px; /* Padding inside the container */
+    text-align: center; /* Center inline/inline-block content like text and the logo container */
 }
 
 h1 {
@@ -333,6 +334,11 @@ h1 {
 
     .calculator-results strong {
         min-width: 150px; /* Adjust alignment width for mobile */
+    }
+
+    .container {
+        /* Potentially adjust padding/margins for mobile if needed */
+        padding: 0 10px;
     }
 }
 
