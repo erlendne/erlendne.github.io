@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "feeLabel": "Monthly Handling Fee:",
             "extraPaymentLabel": "Extra Down Payment (Optional):",
             "taxDeductionLabel": "Deduct 22% tax reduction from savings", // New
+            "inflationLabel": "Adjust savings for 3% yearly inflation", // New
             "calculateButton": "Calculate",
             "resultsHeading": "Results (Without Extra Payment)", // Updated
             "resultsTotalPaid": "Total Amount Paid:",
@@ -44,8 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "resultsPayoffDate": "Original Payoff Date:", // Updated
             "payoffDateFormat": "{month} {year}",
             "savingsHeading": "Savings with Extra Payment", // New
-            "savingsInterestSaved": "Interest Saved:", // New
-            "savingsTotalPaidNew": "New Total Amount Paid:", // New
+            "savingsInterestSaved": "Interest Saved (Nominal):", // Updated
+            "savingsExtraPaymentFutureValue": "Future Value of Extra Payment (at original payoff):", // New
+            "savingsTotalPaidNew": "New Total Amount Paid:", // Updated
             "savingsPayoffDateNew": "New Payoff Date:", // New
             "savingsTermShortened": "Term Shortened By:", // New
             "termShortenedFormat": "{years} years, {months} months" // New format string
@@ -80,6 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             "feeLabel": "Månedlig gebyr:",
             "extraPaymentLabel": "Ekstra nedbetaling (Valgfritt):",
             "taxDeductionLabel": "Trekk fra 22% skattefradrag fra besparelse", // New
+            "inflationLabel": "Juster besparelse for 3% årlig inflasjon", // New
             "calculateButton": "Beregn",
             "resultsHeading": "Resultater (Uten ekstra nedbetaling)", // Updated
             "resultsTotalPaid": "Totalt betalt:",
@@ -89,8 +92,9 @@ document.addEventListener('DOMContentLoaded', function() {
             "resultsPayoffDate": "Opprinnelig nedbetalt dato:", // Updated
             "payoffDateFormat": "{month} {year}",
             "savingsHeading": "Besparelser med ekstra nedbetaling", // New
-            "savingsInterestSaved": "Renter spart:", // New
-            "savingsTotalPaidNew": "Nytt totalt betalt beløp:", // New
+            "savingsInterestSaved": "Renter spart (Nominell):", // Updated
+            "savingsExtraPaymentFutureValue": "Fremtidsverdi av ekstra nedbetaling (ved opprinnelig nedbetaling):", // New
+            "savingsTotalPaidNew": "Nytt totalt betalt beløp:", // Updated
             "savingsPayoffDateNew": "Ny nedbetalt dato:", // New
             "savingsTermShortened": "Nedbetalingstid redusert med:", // New
             "termShortenedFormat": "{years} år, {months} måneder" // New format string
@@ -230,6 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const feeInput = document.getElementById('fee');
         const extraPaymentInput = document.getElementById('extra-payment');
         const taxDeductionCheckbox = document.getElementById('tax-deduction-checkbox'); // New checkbox element
+        const inflationCheckbox = document.getElementById('inflation-checkbox'); // New checkbox element
         const loanTypeInputs = document.querySelectorAll('input[name="loanType"]');
 
         // Original results elements
@@ -245,6 +250,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalPaidNewEl = document.getElementById('total-paid-new');
         const payoffDateNewEl = document.getElementById('payoff-date-new');
         const termShortenedEl = document.getElementById('term-shortened');
+        const extraPaymentFutureValueEl = document.getElementById('extra-payment-future-value'); // New element
+        const adjustedSavingsP = document.getElementById('adjusted-savings-p'); // New element
 
         // Helper function to format numbers
         const formatNumber = (num) => num.toLocaleString(currentLang === 'no' ? 'nb-NO' : 'en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -338,7 +345,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const monthlyFee = parseFloat(feeInput.value) || 0;
             const extraPayment = parseFloat(extraPaymentInput.value) || 0;
             const applyTaxDeduction = taxDeductionCheckbox.checked; // Read checkbox state
+            const applyInflation = inflationCheckbox.checked; // Read inflation checkbox state
             const taxRate = 0.22; // Define tax rate
+            const inflationRate = 0.03; // Yearly inflation rate
 
             const totalMonths_orig = years * 12 + months;
 
@@ -351,6 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 totalFeesEl.textContent = '0';
                 payoffDateEl.textContent = '-';
                 savingsResultsEl.style.display = 'none'; // Hide savings section
+                adjustedSavingsP.style.display = 'none'; // Hide adjusted savings line
                 return;
             }
 
@@ -404,21 +414,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 const grossInterestSaved = originalCalc.totalInterest - newCalc.totalInterest;
 
                 // Calculate Net Interest Saved if tax deduction is applied
-                const interestSaved = applyTaxDeduction ? (grossInterestSaved * (1 - taxRate)) : grossInterestSaved;
+                const netInterestSaved = applyTaxDeduction ? (grossInterestSaved * (1 - taxRate)) : grossInterestSaved;
 
                 const termShortenedMonths = originalCalc.actualTotalMonths - newCalc.actualTotalMonths;
 
-                // Display Savings Results (Interest Saved now reflects potential tax deduction)
-                interestSavedEl.textContent = formatNumber(interestSaved);
-                totalPaidNewEl.textContent = formatNumber(newCalc.totalPaid); // Total paid doesn't change based on tax deduction
+                // Display Nominal Savings Results
+                interestSavedEl.textContent = formatNumber(netInterestSaved);
+                totalPaidNewEl.textContent = formatNumber(newCalc.totalPaid);
                 payoffDateNewEl.textContent = formatDate(newCalc.payoffDate);
                 termShortenedEl.textContent = formatTermDifference(termShortenedMonths);
 
+                // Calculate and Display Future Value of Extra Payment
+                if (applyInflation && originalCalc.actualTotalMonths > 0) {
+                    const yearsToOriginalPayoff = originalCalc.actualTotalMonths / 12;
+                    // Calculate Future Value: FV = PV * (1 + r)^n
+                    const futureValueOfExtraPayment = extraPayment * Math.pow(1 + inflationRate, yearsToOriginalPayoff);
+
+                    extraPaymentFutureValueEl.textContent = formatNumber(futureValueOfExtraPayment); // Display the future value
+                    adjustedSavingsP.style.display = 'block'; // Show the adjusted savings line
+                    console.log(`Inflation adjustment applied. Future value of extra payment calculated.`);
+                } else {
+                    adjustedSavingsP.style.display = 'none'; // Hide the adjusted savings line
+                }
+
                 savingsResultsEl.style.display = 'block';
-                console.log(`Savings calculation complete. Tax deduction applied: ${applyTaxDeduction}`);
+                console.log(`Savings calculation complete. Tax deduction: ${applyTaxDeduction}, Inflation adjustment: ${applyInflation}`);
 
             } else {
                 savingsResultsEl.style.display = 'none';
+                adjustedSavingsP.style.display = 'none'; // Ensure hidden if no extra payment
                 console.log("No valid extra payment entered, hiding savings section.");
             }
 

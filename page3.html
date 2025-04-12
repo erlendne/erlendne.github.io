@@ -87,6 +87,12 @@
                 <label for="tax-deduction-checkbox" data-translate="taxDeductionLabel">Deduct 22% tax reduction from savings</label>
             </div>
 
+            <!-- Inflation Checkbox -->
+            <div class="form-group form-group-checkbox">
+                <input type="checkbox" id="inflation-checkbox">
+                <label for="inflation-checkbox" data-translate="inflationLabel">Adjust savings for 3% yearly inflation</label>
+            </div>
+
             <button type="button" id="calculate-btn" data-translate="calculateButton">Calculate</button>
         </form>
 
@@ -102,7 +108,9 @@
         <!-- New Section for Savings Results -->
         <div id="savings-results" class="calculator-results" style="margin-top: 20px; display: none;"> <!-- Initially hidden -->
             <h2 data-translate="savingsHeading">Savings with Extra Payment</h2>
-            <p><strong data-translate="savingsInterestSaved">Interest Saved:</strong> <span id="interest-saved">0</span></p>
+            <p><strong data-translate="savingsInterestSaved">Interest Saved (Nominal):</strong> <span id="interest-saved">0</span></p> <!-- Clarified label -->
+            <!-- Updated field for inflation-adjusted comparison -->
+            <p id="adjusted-savings-p" style="display: none;"><strong data-translate="savingsExtraPaymentFutureValue">Future Value of Extra Payment (at original payoff):</strong> <span id="extra-payment-future-value">0</span></p> <!-- Updated ID and label key -->
             <p><strong data-translate="savingsTotalPaidNew">New Total Amount Paid:</strong> <span id="total-paid-new">0</span></p>
             <p><strong data-translate="savingsPayoffDateNew">New Payoff Date:</strong> <span id="payoff-date-new">-</span></p>
             <p><strong data-translate="savingsTermShortened">Term Shortened By:</strong> <span id="term-shortened">-</span></p>
