@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🏠 Cleaning Quest: Interactive Checklist</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      color: #333;
+      margin: 0;
+      padding: 2rem;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      color: #4b5563;
+    }
+    .task {
+      background: white;
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.3s;
+    }
+    .task.done {
+      background: #d1fae5;
+      text-decoration: line-through;
+      color: #065f46;
+    }
+    button {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #059669;
+    }
+    .score, .progress-container, .motivator, .mystery-counter {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    .score {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: #111827;
+    }
+    .progress-container {
+      margin: 1rem 0;
+    }
+    .progress-bar {
+      height: 25px;
+      background-color: #d1d5db;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #10b981;
+      width: 0%;
+      transition: width 0.3s ease-in-out;
+      color: white;
+      text-align: center;
+      line-height: 25px;
+    }
+    .stars {
+      font-size: 1.5rem;
+      color: gold;
+      margin-top: 0.5rem;
+    }
+    .motivator {
+      font-style: italic;
+      color: #6b7280;
+    }
+    .photo-reminder {
+      background: #fef9c3;
+      border: 1px solid #fde68a;
+      padding: 1rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+      text-align: center;
+      font-weight: bold;
+      color: #92400e;
+    }
+    .mystery-counter button {
+      margin-top: 0.5rem;
+      background-color: #3b82f6;
+    }
+    .mystery-counter button:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏆 Cleaning Quest: Hero's Checklist</h1>
+
+  <div class="photo-reminder">
+    📸 Don’t forget to take BEFORE and AFTER photos to celebrate your journey!
+  </div>
+
+  <div id="taskList"></div>
+
+  <div class="score" id="score">Total Points: 0 🧼</div>
+  <div class="stars" id="stars">⭐</div>
+
+  <div class="progress-container">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill">0%</div>
+    </div>
+  </div>
+
+  <div class="motivator" id="motivator">Let’s kick things off strong 💪</div>
+
+  <div class="mystery-counter">
+    <p>Mystery Items Found: <span id="mysteryCount">0</span> 🕵️‍♂️ (+1 pt each)</p>
+    <button onclick="addMysteryItem()">Found a Mystery Item!</button>
+  </div>
+
+  <script>
+  const tasks = [
+    { name: "✨ Clean all floors (2 pts)", points: 2 },
+    { name: "🪑 Tidy dining area (1 pt)", points: 1 },
+    { name: "🎮 Tidy gaming area (1 pt)", points: 1 },
+    { name: "🧼 Fix wall above stove (2 pts)", points: 2 },
+    { name: "🌿 Fix outdoor stairs & plant things (2 pts)", points: 2 },
+    { name: "🍳 Kitchen: Clean drawers & declutter (8 pts)", points: 8 },
+    { name: "🧽 Kitchen: Clean fronts of cupboards (8 pts)", points: 8 },
+    { name: "🧑‍💻 Office: Clean drawers, choose desk plan (8 pts)", points: 8 },
+    { name: "🖌️ Paint/setup new desk (8 pts)", points: 8 },
+    { name: "🧺 Bedroom: Sort old clothes + gear (5 pts)", points: 5 },
+    { name: "🗃️ Bedroom: Organize hiking gear (5 pts)", points: 5 },
+    { name: "📦 Storage closet: First pass sort (5 pts)", points: 5 },
+    { name: "🧹 Storage closet: Final organize + donate (5 pts)", points: 5 },
+  ];
+
+  let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
+  let completedTasks = 0;
+  let mysteryCount = parseInt(localStorage.getItem("mysteryCount")) || 0;
+  const completedTaskIndices = JSON.parse(localStorage.getItem("completedTaskIndices")) || [];
+  const maxPoints = tasks.reduce((acc, task) => acc + task.points, 0);
+
+  const taskList = document.getElementById("taskList");
+  const scoreDisplay = document.getElementById("score");
+  const progressFill = document.getElementById("progressFill");
+  const starsDisplay = document.getElementById("stars");
+  const motivator = document.getElementById("motivator");
+  const mysteryDisplay = document.getElementById("mysteryCount");
+
+  const motivationQuotes = [
+    "Keep going, you're doing amazing!",
+    "You’re one step closer to a fresh space 🧽",
+    "Crushing it! On to the next level 🎯",
+    "Your future self says thank you 🙌",
+    "Wow, just wow — look at you go! 💥"
+  ];
+
+  // Render tasks
+  tasks.forEach((task, index) => {
+    const div = document.createElement("div");
+    div.classList.add("task");
+    div.innerHTML = `<span>${task.name}</span><button data-index="${index}">Complete</button>`;
+    taskList.appendChild(div);
+  });
+
+  // Restore completed tasks
+  completedTaskIndices.forEach(idx => {
+    const taskDiv = taskList.children[idx];
+    taskDiv.classList.add("done");
+    const button = taskDiv.querySelector("button");
+    button.disabled = true;
+    button.textContent = "Done!";
+    completedTasks++;
+  });
+
+  updateUI();
+
+  taskList.addEventListener("click", (e) => {
+    if (e.target.tagName === "BUTTON") {
+      const idx = parseInt(e.target.getAttribute("data-index"));
+      const taskDiv = e.target.parentElement;
+      if (!taskDiv.classList.contains("done")) {
+        taskDiv.classList.add("done");
+        totalPoints += tasks[idx].points;
+        completedTasks++;
+        completedTaskIndices.push(idx);
+
+        // Save state
+        localStorage.setItem("totalPoints", totalPoints);
+        localStorage.setItem("completedTaskIndices", JSON.stringify(completedTaskIndices));
+
+        updateUI();
+
+        e.target.disabled = true;
+        e.target.textContent = "Done!";
+        motivator.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+      }
+    }
+  });
+
+  function addMysteryItem() {
+    mysteryCount++;
+    totalPoints++;
+    localStorage.setItem("mysteryCount", mysteryCount);
+    localStorage.setItem("totalPoints", totalPoints);
+    updateUI();
+    motivator.textContent = "Mystery uncovered! +1 bonus point 🎉";
+  }
+
+  function updateUI() {
+    scoreDisplay.textContent = `Total Points: ${totalPoints} 🧼`;
+    mysteryDisplay.textContent = mysteryCount;
+    starsDisplay.innerHTML = "⭐".repeat(Math.floor(totalPoints / 10));
+
+    const progress = Math.min(Math.round((totalPoints / (maxPoints + 20)) * 100), 100);
+    progressFill.style.width = progress + "%";
+    progressFill.textContent = progress + "%";
+  }
+
+  // Attach the mystery item function to button
+  window.addMysteryItem = addMysteryItem;
+</script>
+</body>
+</html>
