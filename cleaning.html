@@ -124,108 +124,126 @@
     <button onclick="addMysteryItem()">Found a Mystery Item!</button>
   </div>
 
+  <div class="mystery-counter">
+    <p>Windows Cleaned: <span id="windowCount">0</span> 🪟 (+1 pt each)</p>
+    <button onclick="addWindow()">Cleaned a Window!</button>
+  </div>
+
   <script>
-  const tasks = [
-    { name: "✨ Clean all floors (2 pts)", points: 2 },
-    { name: "🪑 Tidy dining area (1 pt)", points: 1 },
-    { name: "🎮 Tidy gaming area (1 pt)", points: 1 },
-    { name: "🧼 Fix wall above stove (2 pts)", points: 2 },
-    { name: "🌿 Fix outdoor stairs & plant things (2 pts)", points: 2 },
-    { name: "🍳 Kitchen: Clean drawers & declutter (8 pts)", points: 8 },
-    { name: "🧽 Kitchen: Clean fronts of cupboards (8 pts)", points: 8 },
-    { name: "🧑‍💻 Office: Clean drawers, choose desk plan (8 pts)", points: 8 },
-    { name: "🖌️ Paint/setup new desk (8 pts)", points: 8 },
-    { name: "🧺 Bedroom: Sort old clothes + gear (5 pts)", points: 5 },
-    { name: "🗃️ Bedroom: Organize hiking gear (5 pts)", points: 5 },
-    { name: "📦 Storage closet: First pass sort (5 pts)", points: 5 },
-    { name: "🧹 Storage closet: Final organize + donate (5 pts)", points: 5 },
-  ];
+    const tasks = [
+      { name: "✨ Clean all floors (2 pts)", points: 2 },
+      { name: "🪑 Tidy dining area (1 pt)", points: 1 },
+      { name: "🎮 Tidy gaming area (1 pt)", points: 1 },
+      { name: "🧼 Fix wall above stove (2 pts)", points: 2 },
+      { name: "🌿 Fix outdoor stairs & plant things (2 pts)", points: 2 },
+      { name: "🍳 Kitchen: Clean drawers & declutter (8 pts)", points: 8 },
+      { name: "🧽 Kitchen: Clean fronts of cupboards (8 pts)", points: 8 },
+      { name: "🧑‍💻 Office: Clean drawers, choose desk plan (8 pts)", points: 8 },
+      { name: "🖌️ Paint/setup new desk (8 pts)", points: 8 },
+      { name: "🧺 Bedroom: Sort old clothes + gear (5 pts)", points: 5 },
+      { name: "🗃️ Bedroom: Organize hiking gear (5 pts)", points: 5 },
+      { name: "📦 Storage closet: First pass sort (5 pts)", points: 5 },
+      { name: "🧹 Storage closet: Final organize + donate (5 pts)", points: 5 }
+    ];
 
-  let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
-  let completedTasks = 0;
-  let mysteryCount = parseInt(localStorage.getItem("mysteryCount")) || 0;
-  const completedTaskIndices = JSON.parse(localStorage.getItem("completedTaskIndices")) || [];
-  const maxPoints = tasks.reduce((acc, task) => acc + task.points, 0);
+    let totalPoints = parseInt(localStorage.getItem("totalPoints")) || 0;
+    let completedTasks = 0;
+    let mysteryCount = parseInt(localStorage.getItem("mysteryCount")) || 0;
+    let windowCount = parseInt(localStorage.getItem("windowCount")) || 0;
+    const completedTaskIndices = JSON.parse(localStorage.getItem("completedTaskIndices")) || [];
+    const maxPoints = tasks.reduce((acc, task) => acc + task.points, 0);
 
-  const taskList = document.getElementById("taskList");
-  const scoreDisplay = document.getElementById("score");
-  const progressFill = document.getElementById("progressFill");
-  const starsDisplay = document.getElementById("stars");
-  const motivator = document.getElementById("motivator");
-  const mysteryDisplay = document.getElementById("mysteryCount");
+    const taskList = document.getElementById("taskList");
+    const scoreDisplay = document.getElementById("score");
+    const progressFill = document.getElementById("progressFill");
+    const starsDisplay = document.getElementById("stars");
+    const motivator = document.getElementById("motivator");
+    const mysteryDisplay = document.getElementById("mysteryCount");
+    const windowDisplay = document.getElementById("windowCount");
 
-  const motivationQuotes = [
-    "Keep going, you're doing amazing!",
-    "You’re one step closer to a fresh space 🧽",
-    "Crushing it! On to the next level 🎯",
-    "Your future self says thank you 🙌",
-    "Wow, just wow — look at you go! 💥"
-  ];
+    const motivationQuotes = [
+      "Keep going, you're doing amazing!",
+      "You’re one step closer to a fresh space 🧽",
+      "Crushing it! On to the next level 🎯",
+      "Your future self says thank you 🙌",
+      "Wow, just wow — look at you go! 💥"
+    ];
 
-  // Render tasks
-  tasks.forEach((task, index) => {
-    const div = document.createElement("div");
-    div.classList.add("task");
-    div.innerHTML = `<span>${task.name}</span><button data-index="${index}">Complete</button>`;
-    taskList.appendChild(div);
-  });
+    // Render tasks
+    tasks.forEach((task, index) => {
+      const div = document.createElement("div");
+      div.classList.add("task");
+      div.innerHTML = `<span>${task.name}</span><button data-index="${index}">Complete</button>`;
+      taskList.appendChild(div);
+    });
 
-  // Restore completed tasks
-  completedTaskIndices.forEach(idx => {
-    const taskDiv = taskList.children[idx];
-    taskDiv.classList.add("done");
-    const button = taskDiv.querySelector("button");
-    button.disabled = true;
-    button.textContent = "Done!";
-    completedTasks++;
-  });
+    // Restore completed tasks
+    completedTaskIndices.forEach(idx => {
+      const taskDiv = taskList.children[idx];
+      taskDiv.classList.add("done");
+      const button = taskDiv.querySelector("button");
+      button.disabled = true;
+      button.textContent = "Done!";
+      completedTasks++;
+    });
 
-  updateUI();
-
-  taskList.addEventListener("click", (e) => {
-    if (e.target.tagName === "BUTTON") {
-      const idx = parseInt(e.target.getAttribute("data-index"));
-      const taskDiv = e.target.parentElement;
-      if (!taskDiv.classList.contains("done")) {
-        taskDiv.classList.add("done");
-        totalPoints += tasks[idx].points;
-        completedTasks++;
-        completedTaskIndices.push(idx);
-
-        // Save state
-        localStorage.setItem("totalPoints", totalPoints);
-        localStorage.setItem("completedTaskIndices", JSON.stringify(completedTaskIndices));
-
-        updateUI();
-
-        e.target.disabled = true;
-        e.target.textContent = "Done!";
-        motivator.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
-      }
-    }
-  });
-
-  function addMysteryItem() {
-    mysteryCount++;
-    totalPoints++;
-    localStorage.setItem("mysteryCount", mysteryCount);
-    localStorage.setItem("totalPoints", totalPoints);
     updateUI();
-    motivator.textContent = "Mystery uncovered! +1 bonus point 🎉";
-  }
 
-  function updateUI() {
-    scoreDisplay.textContent = `Total Points: ${totalPoints} 🧼`;
-    mysteryDisplay.textContent = mysteryCount;
-    starsDisplay.innerHTML = "⭐".repeat(Math.floor(totalPoints / 10));
+    taskList.addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON") {
+        const idx = parseInt(e.target.getAttribute("data-index"));
+        const taskDiv = e.target.parentElement;
+        if (!taskDiv.classList.contains("done")) {
+          taskDiv.classList.add("done");
+          totalPoints += tasks[idx].points;
+          completedTasks++;
+          completedTaskIndices.push(idx);
 
-    const progress = Math.min(Math.round((totalPoints / (maxPoints + 20)) * 100), 100);
-    progressFill.style.width = progress + "%";
-    progressFill.textContent = progress + "%";
-  }
+          // Save state
+          localStorage.setItem("totalPoints", totalPoints);
+          localStorage.setItem("completedTaskIndices", JSON.stringify(completedTaskIndices));
 
-  // Attach the mystery item function to button
-  window.addMysteryItem = addMysteryItem;
-</script>
+          updateUI();
+
+          e.target.disabled = true;
+          e.target.textContent = "Done!";
+          motivator.textContent = motivationQuotes[Math.floor(Math.random() * motivationQuotes.length)];
+        }
+      }
+    });
+
+    function addMysteryItem() {
+      mysteryCount++;
+      totalPoints++;
+      localStorage.setItem("mysteryCount", mysteryCount);
+      localStorage.setItem("totalPoints", totalPoints);
+      updateUI();
+      motivator.textContent = "Mystery uncovered! +1 bonus point 🎉";
+    }
+
+    function addWindow() {
+      windowCount++;
+      totalPoints++;
+      localStorage.setItem("windowCount", windowCount);
+      localStorage.setItem("totalPoints", totalPoints);
+      updateUI();
+      motivator.textContent = "Another window shines! ✨ +1 point";
+    }
+
+    function updateUI() {
+      scoreDisplay.textContent = `Total Points: ${totalPoints} 🧼`;
+      mysteryDisplay.textContent = mysteryCount;
+      windowDisplay.textContent = windowCount;
+      starsDisplay.innerHTML = "⭐".repeat(Math.floor(totalPoints / 10));
+
+      const bonusEstimate = 20;
+      const progress = Math.min(Math.round((totalPoints / (maxPoints + bonusEstimate)) * 100), 100);
+      progressFill.style.width = progress + "%";
+      progressFill.textContent = progress + "%";
+    }
+
+    window.addMysteryItem = addMysteryItem;
+    window.addWindow = addWindow;
+  </script>
 </body>
 </html>
