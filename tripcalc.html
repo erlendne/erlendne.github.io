@@ -1,20 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no"> <!-- Default language set to Norwegian -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hiking Time Calculator</title>
+    <title id="pageTitle">Turkalkulator</title> <!-- Default title -->
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     <style>
         body {
             font-family: sans-serif;
-            background-color: #f8f9fa; /* Light gray background */
+            background-color: #f8f9fa;
         }
         .calculator-container {
             max-width: 600px;
-            margin-top: 50px;
+            margin-top: 30px; /* Adjusted margin */
+            margin-bottom: 30px;
             padding: 30px;
             background-color: #ffffff;
             border-radius: 8px;
@@ -27,6 +28,10 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+        .lang-switcher {
+            margin-bottom: 20px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -34,36 +39,38 @@
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
                 <div class="calculator-container">
-                    <h1 class="mb-4 text-center">Hiking Time Calculator</h1>
+                    <div class="lang-switcher">
+                        <button id="langToggleBtn" class="btn btn-sm btn-outline-secondary">Switch to English</button>
+                    </div>
+
+                    <h1 class="mb-4 text-center" id="mainHeading">Turkalkulator</h1>
 
                     <form id="hikingForm">
                         <div class="mb-3">
-                            <label for="tripType" class="form-label">Type of Trip:</label>
+                            <label for="tripType" class="form-label" id="labelTripType">Turtype:</label>
                             <select class="form-select" id="tripType" name="tripType" required>
-                                <option value="flat" selected>Flat Trip</option>
-                                <option value="steep">Steep Uphill Trip</option>
+                                <!-- Options will be populated by JavaScript -->
                             </select>
                         </div>
 
                         <div class="mb-3">
-                            <label for="inputValue" class="form-label" id="inputLabel">Distance (meters):</label>
+                            <label for="inputValue" class="form-label" id="inputLabel">Distanse (meter):</label>
                             <input type="number" class="form-control" id="inputValue" name="inputValue"
-                                placeholder="Enter value in meters" min="0" step="any" required>
-                            <div class="invalid-feedback">
-                                Please enter a valid positive number.
+                                placeholder="Skriv inn verdi i meter" min="0" step="any" required>
+                            <div class="invalid-feedback" id="validationErrorPositiveNumber">
+                                Vennligst skriv inn et gyldig positivt tall.
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="tripDirection" class="form-label">Trip Direction:</label>
+                            <label for="tripDirection" class="form-label" id="labelTripDirection">Turretning:</label>
                             <select class="form-select" id="tripDirection" name="tripDirection" required>
-                                <option value="one-way" selected>One-Way</option>
-                                <option value="roundtrip">Roundtrip</option>
+                                <!-- Options will be populated by JavaScript -->
                             </select>
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">Calculate Time</button>
+                            <button type="submit" class="btn btn-primary btn-lg" id="calculateBtn">Beregn Tid</button>
                         </div>
                     </form>
 
@@ -81,123 +88,234 @@
         crossorigin="anonymous"></script>
 
     <script>
+        const translations = {
+            en: {
+                pageTitle: "Hiking Time Calculator",
+                mainHeading: "Hiking Time Calculator",
+                labelTripType: "Type of Trip:",
+                flatTrip: "Flat Trip",
+                steepTrip: "Steep Uphill Trip",
+                inputLabelDistance: "Distance (meters):",
+                inputPlaceholderDistance: "Enter distance in meters",
+                inputLabelElevation: "Elevation Gain (meters):",
+                inputPlaceholderElevation: "Enter elevation gain in meters",
+                labelTripDirection: "Trip Direction:",
+                oneWay: "One-Way",
+                roundtrip: "Roundtrip",
+                calculateBtn: "Calculate Time",
+                validationErrorPositiveNumber: "Please enter a valid positive number.",
+                validationErrorGeneric: "Please correct the errors above.",
+                resultPrefix: "Estimated time: ",
+                hour: "hour",
+                hours: "hours",
+                minute: "minute",
+                minutes: "minutes",
+                and: "and",
+                lessThanAMinute: "Less than a minute",
+                zeroMinutes: "0 minutes",
+                switchToNorwegian: "Bytt til Norsk",
+                switchToEnglish: "Switch to English"
+            },
+            no: {
+                pageTitle: "Turkalkulator",
+                mainHeading: "Turkalkulator",
+                labelTripType: "Turtype:",
+                flatTrip: "Flat Tur",
+                steepTrip: "Bratt Oppoverbakke",
+                inputLabelDistance: "Distanse (meter):",
+                inputPlaceholderDistance: "Skriv inn distanse i meter",
+                inputLabelElevation: "Høydemeter (meter):",
+                inputPlaceholderElevation: "Skriv inn høydemeter",
+                labelTripDirection: "Turretning:",
+                oneWay: "Enkelttur",
+                roundtrip: "Tur/Retur",
+                calculateBtn: "Beregn Tid",
+                validationErrorPositiveNumber: "Vennligst skriv inn et gyldig positivt tall.",
+                validationErrorGeneric: "Vennligst rett feilene ovenfor.",
+                resultPrefix: "Estimert tid: ",
+                hour: "time",
+                hours: "timer",
+                minute: "minutt",
+                minutes: "minutter",
+                and: "og",
+                lessThanAMinute: "Mindre enn ett minutt",
+                zeroMinutes: "0 minutter",
+                switchToNorwegian: "Bytt til Norsk",
+                switchToEnglish: "Switch to English"
+            }
+        };
+
+        let currentLanguage = localStorage.getItem('hikingCalcLang') || 'no'; // Default to Norwegian
+
         const form = document.getElementById('hikingForm');
         const tripTypeSelect = document.getElementById('tripType');
         const inputValueInput = document.getElementById('inputValue');
         const inputLabel = document.getElementById('inputLabel');
-        const tripDirectionSelect = document.getElementById('tripDirection'); // New select element
+        const tripDirectionSelect = document.getElementById('tripDirection');
         const resultDiv = document.getElementById('result');
+        const langToggleBtn = document.getElementById('langToggleBtn');
 
-        // Update input label based on trip type selection
-        tripTypeSelect.addEventListener('change', function() {
-            if (this.value === 'flat') {
-                inputLabel.textContent = 'Distance (meters):';
-                inputValueInput.placeholder = 'Enter distance in meters';
-            } else {
-                inputLabel.textContent = 'Elevation Gain (meters):';
-                inputValueInput.placeholder = 'Enter elevation gain in meters';
+        // --- DOM Elements for Translation ---
+        const pageTitleEl = document.getElementById('pageTitle');
+        const mainHeadingEl = document.getElementById('mainHeading');
+        const labelTripTypeEl = document.getElementById('labelTripType');
+        const labelTripDirectionEl = document.getElementById('labelTripDirection');
+        const calculateBtnEl = document.getElementById('calculateBtn');
+        const validationErrorPositiveNumberEl = document.getElementById('validationErrorPositiveNumber');
+
+
+        function populateSelectWithOptions(selectElement, options, selectedValue) {
+            selectElement.innerHTML = ''; // Clear existing options
+            for (const [value, text] of Object.entries(options)) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = text;
+                if (value === selectedValue) {
+                    option.selected = true;
+                }
+                selectElement.appendChild(option);
             }
-            // Clear previous result and input on type change
+        }
+
+        function updateTexts(lang) {
+            const t = translations[lang];
+            document.documentElement.lang = lang;
+            pageTitleEl.textContent = t.pageTitle;
+            mainHeadingEl.textContent = t.mainHeading;
+            labelTripTypeEl.textContent = t.labelTripType;
+            labelTripDirectionEl.textContent = t.labelTripDirection;
+            calculateBtnEl.textContent = t.calculateBtn;
+            validationErrorPositiveNumberEl.textContent = t.validationErrorPositiveNumber;
+
+            // Populate select options
+            const currentTripType = tripTypeSelect.value || 'flat'; // Persist selection
+            populateSelectWithOptions(tripTypeSelect, {
+                flat: t.flatTrip,
+                steep: t.steepTrip
+            }, currentTripType);
+
+            const currentTripDirection = tripDirectionSelect.value || 'one-way'; // Persist selection
+            populateSelectWithOptions(tripDirectionSelect, {
+                'one-way': t.oneWay,
+                'roundtrip': t.roundtrip
+            }, currentTripDirection);
+            
+            // Update dynamic input label and placeholder
+            updateInputFieldsBasedOnTripType(lang);
+
+            // Update language toggle button text
+            langToggleBtn.textContent = (lang === 'no') ? t.switchToEnglish : t.switchToNorwegian;
+
+            // Clear result if language changes as context might be lost
             clearResult();
-            // inputValueInput.value = ''; // Optional: clear input value
+        }
+
+        function updateInputFieldsBasedOnTripType(lang = currentLanguage) {
+            const t = translations[lang];
+            if (tripTypeSelect.value === 'flat') {
+                inputLabel.textContent = t.inputLabelDistance;
+                inputValueInput.placeholder = t.inputPlaceholderDistance;
+            } else {
+                inputLabel.textContent = t.inputLabelElevation;
+                inputValueInput.placeholder = t.inputPlaceholderElevation;
+            }
+        }
+        
+        langToggleBtn.addEventListener('click', () => {
+            currentLanguage = (currentLanguage === 'no') ? 'en' : 'no';
+            localStorage.setItem('hikingCalcLang', currentLanguage);
+            updateTexts(currentLanguage);
         });
 
-        // Clear result if trip direction changes (optional, but good for consistency)
-        tripDirectionSelect.addEventListener('change', function() {
+        tripTypeSelect.addEventListener('change', function() {
+            updateInputFieldsBasedOnTripType();
             clearResult();
         });
-        inputValueInput.addEventListener('input', function() {
-            clearResult(); // Clear result when user types new input
-        });
+
+        tripDirectionSelect.addEventListener('change', clearResult);
+        inputValueInput.addEventListener('input', clearResult);
 
 
         form.addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent default form submission
+            event.preventDefault();
             
-            // Basic Bootstrap validation
             if (!form.checkValidity()) {
                 event.stopPropagation();
                 form.classList.add('was-validated');
-                displayResult('Please correct the errors above.', 'danger');
+                displayResult(translations[currentLanguage].validationErrorGeneric, 'danger');
                 return;
             }
-            form.classList.remove('was-validated'); // Reset validation state if successful
+            form.classList.remove('was-validated');
 
             const tripType = tripTypeSelect.value;
             const value = parseFloat(inputValueInput.value);
-            const tripDirection = tripDirectionSelect.value; // Get trip direction
+            const tripDirection = tripDirectionSelect.value;
+            const t = translations[currentLanguage];
+
 
             if (isNaN(value) || value < 0) {
-                displayResult('Please enter a valid positive number for the value.', 'danger');
+                // This specific message is already part of Bootstrap's feedback
+                // but we can ensure our generic one doesn't show if this is the only error
                 inputValueInput.classList.add('is-invalid');
+                // Optionally, call displayResult if you want a more prominent message than the default feedback
+                // displayResult(t.validationErrorPositiveNumber, 'danger');
                 return;
             }
             inputValueInput.classList.remove('is-invalid');
 
-
             let totalMinutes;
 
             if (tripType === 'flat') {
-                // Flat trips: (meters * 17.14) / 1000 minutes
                 totalMinutes = (value * 17.14) / 1000;
-            } else { // steep
-                // Steep uphill trips: (elevation_meters * 15) / 100 minutes
+            } else { 
                 totalMinutes = (value * 15) / 100;
             }
 
-            // Adjust for roundtrip
             if (tripDirection === 'roundtrip') {
                 totalMinutes *= 2;
             }
 
-            if (totalMinutes < 0) totalMinutes = 0; // Ensure no negative time
+            if (totalMinutes < 0) totalMinutes = 0;
 
             const hours = Math.floor(totalMinutes / 60);
             const minutes = Math.round(totalMinutes % 60);
 
-            let timeString = "Estimated time: ";
+            let timeString = t.resultPrefix;
             if (hours > 0) {
-                timeString += `${hours} hour${hours > 1 ? 's' : ''}`;
+                timeString += `${hours} ${hours > 1 ? t.hours : t.hour}`;
             }
             if (minutes > 0) {
                 if (hours > 0) {
-                    timeString += " and ";
+                    timeString += ` ${t.and} `;
                 }
-                timeString += `${minutes} minute${minutes > 1 ? 's' : ''}`;
+                timeString += `${minutes} ${minutes > 1 ? t.minutes : t.minute}`;
             }
 
             if (hours === 0 && minutes === 0) {
-                if (totalMinutes > 0) { // very small duration
-                     timeString += "Less than a minute";
-                } else { // exactly zero
-                     timeString += "0 minutes";
+                if (totalMinutes > 0) {
+                     timeString += t.lessThanAMinute;
+                } else {
+                     timeString += t.zeroMinutes;
                 }
             }
-
             displayResult(timeString, 'success');
         });
 
         function displayResult(message, type = 'info') {
             resultDiv.textContent = message;
-            resultDiv.className = `mt-4 p-3 rounded alert alert-${type}`; // Bootstrap alert classes
+            resultDiv.className = `mt-4 p-3 rounded alert alert-${type}`;
             resultDiv.style.display = 'block';
         }
 
         function clearResult() {
             resultDiv.style.display = 'none';
             resultDiv.textContent = '';
-            resultDiv.className = 'mt-4 p-3 rounded'; // Reset classes
+            resultDiv.className = 'mt-4 p-3 rounded';
         }
 
-        // Initialize label correctly on page load
+        // Initial setup on page load
         document.addEventListener('DOMContentLoaded', () => {
-            if (tripTypeSelect.value === 'flat') {
-                inputLabel.textContent = 'Distance (meters):';
-                inputValueInput.placeholder = 'Enter distance in meters';
-            } else {
-                inputLabel.textContent = 'Elevation Gain (meters):';
-                inputValueInput.placeholder = 'Enter elevation gain in meters';
-            }
+            updateTexts(currentLanguage); // Set initial language texts
         });
 
     </script>
